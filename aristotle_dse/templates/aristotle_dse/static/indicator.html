@@ -1,0 +1,17 @@
+{% extends "comet/static/about_comet_item_base.html" %}
+
+{% block title %}About: Indicator{% endblock %}
+{% block item_name %}Indicator{% endblock %}
+
+{% block description %}
+<p>A description of a statistic or set of statistics which suggest the state of some aspect of society: a health indicator; the number of people vaccinated against a specific disease is an indicator of the chances of that disease occurring in the community.
+
+{# <p>Indicators have thirty attributes which are unique within METeOR: Indicator Type, Indicator common name,  Description, Rationale, Indicator set, Outcome area, Population group age from, Population group age to, Computation description, Formulae, Numerator, Numerator items, Denominator, Denominator items, Disaggregation items, Data element/Data set, Data source, NMDS/DSS, Collection Methods/Guide for use, Framework and dimensions, Methodology, Formulae, Reporting requirements, Organisation responsible for providing data, Accountability, Benchmark, International comparisons, Further data development/collection required, Other issues caveats, and Release date. #}
+
+<p>The union of an indicator with a specific indicator set and a specific outcome area creates an indicator for a specific agreement
+For example, the <em>National Disability Agreement</em> indicator set can be combined with <em>People with disability achieve economic
+participation and social inclusion</em> outcome area and <em>Labour force participation rate for people with disability aged 15-64 years
+, 2011</em> indicator to create the indicator:
+
+<br><em>National Disability Agreement: a(3)-Labour force participation rate for people with disability aged 15-64 years, 2011.</em>
+{% endblock %}

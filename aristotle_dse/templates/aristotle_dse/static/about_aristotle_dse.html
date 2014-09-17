@@ -1,0 +1,25 @@
+{% extends "aristotle_mdr/base.html" %}
+
+{% block title %}About: Aristotle Dataset Extensions{% endblock %}
+
+{% block content %}
+<div class="row">
+<h1><a href="#">Aristotle Dataset Extensions</a></h1>
+<p>The Aristotle Dataset Extensions adds two additional content types for the
+<a href="https://github.com/LegoStormtroopr/aristotle-metadata-registry">Aristotle MetaData Registry</a>
+that allow for the tracking and registration of datasets and dataset metadata.
+</p>
+
+<p><b>Aristotle-DSE</b> adds the following 2 <a href='{% url "aristotle:about" template="administeditems" %}'>administed items</a>:
+<ul>
+    <li>
+        <a href='{% url "aristotle_dse:about" template="datasource" %}'>Data Sources</a>
+    </li>
+    <li>
+        <a href='{% url "aristotle_dse:about" template="datasetspecification" %}'>Dataset Specification</a>
+    </li>
+</ul>
+</p>
+</div>
+
+{% endblock %}
