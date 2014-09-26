@@ -9,11 +9,20 @@
             <br> If the items must occur in a particular order in the dataset, the sequence number is included before the item name.
         </p>
         {% if user_can_edit %}
-            <a href="#" class="btn btn-primary">
+            <a href="{% url 'aristotle_dse:addDataElementsToDSS' dss_id=item.id %}"
+                data-toggle="modal" data-target="#addDEtoDSS"
+                class="btn btn-primary">
                 <i class="fa fa-plus"></i>
                 Add a data element to this data set specification
             </a>
-            {% endif %}
+            <div id="addDEtoDSS" class="modal fade">
+              <div class="modal-dialog">
+                  <div class="modal-content">
+                  </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
+
+        {% endif %}
         <table class="dssInclusions table table-striped table-condensed">
             <thead>
                 <tr>
