@@ -1,0 +1,1 @@
+-e git+git://github.com/LegoStormtroopr/aristotle-metadata-registry#egg=aristotle-mdr
