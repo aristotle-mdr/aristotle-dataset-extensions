@@ -20,7 +20,7 @@ def addDataElementsToDSS(request,dss_id):
     dss = get_object_or_404(aristotle_dse.models.DataSetSpecification,id=dss_id)
     if not user_can_edit(request.user,dss):
         raise PermissionDenied
-    qs=aristotle.models.DataElement.objects.filter().visible_slow(request.user)
+    qs=aristotle.models.DataElement.objects.filter().visible(request.user)
     if request.method == 'POST': # If the form has been submitted...
         form = forms.AddDataElementsToDSSForm(request.POST,user=request.user,qs=qs,dss=dss) # A form bound to the POST data
         if form.is_valid():

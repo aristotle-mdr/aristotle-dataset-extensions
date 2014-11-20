@@ -45,7 +45,7 @@ class DataSetSpecification(aristotle.models.concept):
             'valueDomains':set(de.dataElement.valueDomain for de in des),
         }
 # Holds the link between a DSS and a Data Element with the DSS Specific details.
-class DSSDEInclusion(models.Model):
+class DSSDEInclusion(aristotle.models.aristotleComponent):
     dataElement = models.ForeignKey(aristotle.models.DataElement,related_name="dssInclusions")
     dss = models.ForeignKey(DataSetSpecification,related_name="dataElements")
     maximumOccurances = models.PositiveIntegerField(default=1)
@@ -54,6 +54,10 @@ class DSSDEInclusion(models.Model):
     conditionalObligation = models.TextField(blank=True)
     order = models.PositiveSmallIntegerField("Position",null=True,blank=True)
     ordered = models.BooleanField(default=False)
+
+    @property
+    def parentItem(self):
+        return self.dss
 
     class Meta:
         verbose_name = "DSS Data Element Inclusion"
