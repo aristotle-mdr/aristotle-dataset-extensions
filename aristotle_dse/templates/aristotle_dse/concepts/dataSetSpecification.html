@@ -23,6 +23,11 @@
         </div><!-- /.modal -->
 
     {% endif %}
+    <script>
+        $(function () {
+          $('[data-toggle="popover"]').popover()
+        })
+    </script>
 
     {% if item.dataElements.all %}
         <table class="dssInclusions table table-striped table-condensed">
@@ -30,8 +35,16 @@
                 <tr>
                     <th></th>
                     <th>Data Element</th>
-                    <th>Inclusion</th>
-                    <th title="Maximum Occurances" class="maxOccurs">#</th>
+                    <th>
+                        <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-placement="left" data-html="true"
+                            title="Data Element Inclusion" data-content="The rules for inclusion for a data element within a data set.<br>May be optional, mandatory or conditional">
+                            Inclusion</a>
+                    </th>
+                    <th class="maxOccurs">
+                        <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-placement="left"
+                            title="Maximum Occurances" data-content="The maximum number of times a data element may be repeated in a data set.">
+                            #</a>
+                    </th>
                     {% if item|can_edit:request.user %}<th title="Use the links in this column to remove data elements from this Dataset specification"><i class="fa fa-trash-o"></i></th>{% endif %}
                 </tr>
             </thead>
@@ -40,16 +53,16 @@
                 <tr>
                     <td></td>
                     <td>{% include "aristotle_mdr/helpers/itemLink.html" with item=deinc.dataElement %}
-                    {% if deinc.specificInformation %}
-                    <div>
-                        {% inplace_edit 'deinc.specificInformation' %}
-                    </div>
-                    {% endif %}
-                    {% if deinc.conditionalObligation %}
-                    <div>
-                        <strong>Conditional Obligation:</strong>{% inplace_edit 'deinc.conditionalObligation' %}
-                    </div>
-                    {% endif %}
+                        {% if deinc.specificInformation %}
+                        <div>
+                            {% inplace_edit 'deinc.specificInformation' adaptor='aristotle' %}
+                        </div>
+                        {% endif %}
+                        {% if deinc.conditionalObligation %}
+                        <div>
+                            <strong>Conditional Obligation:</strong>{% inplace_edit 'deinc.conditionalObligation' %}
+                        </div>
+                        {% endif %}
                     </td>
                     <td>{% inplace_edit 'deinc.cardinality' %}</td>
                     <td>{% inplace_edit 'deinc.maximumOccurances' %}</td>

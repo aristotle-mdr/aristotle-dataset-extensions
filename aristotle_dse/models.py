@@ -50,7 +50,7 @@ class DSSDEInclusion(aristotle.models.aristotleComponent):
     dss = models.ForeignKey(DataSetSpecification,related_name="dataElements")
     maximumOccurances = models.PositiveIntegerField(default=1)
     cardinality = models.CharField(choices=CARDINALITY, default=CARDINALITY.conditional,max_length=20)
-    specificInformation = models.TextField(blank=True)
+    specificInformation = HTMLField(blank=True) # may need to become HTML field.
     conditionalObligation = models.TextField(blank=True)
     order = models.PositiveSmallIntegerField("Position",null=True,blank=True)
     ordered = models.BooleanField(default=False)
