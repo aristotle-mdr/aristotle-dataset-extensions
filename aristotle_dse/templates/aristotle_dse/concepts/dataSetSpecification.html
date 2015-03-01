@@ -1,5 +1,5 @@
 {% extends "aristotle_mdr/concepts/managedContent.html" %}
-{% load inplace_edit %}
+
 {% load aristotle_tags %}
 
 {% block objSpecific %}
@@ -55,17 +55,17 @@
                     <td>{% include "aristotle_mdr/helpers/itemLink.html" with item=deinc.dataElement %}
                         {% if deinc.specificInformation %}
                         <div>
-                            {% inplace_edit 'deinc.specificInformation' adaptor='aristotle' %}
+                            {{ deinc.specificInformation | safe }}
                         </div>
                         {% endif %}
                         {% if deinc.conditionalObligation %}
                         <div>
-                            <strong>Conditional Obligation:</strong>{% inplace_edit 'deinc.conditionalObligation' %}
+                            <strong>Conditional Obligation:</strong>{{ deinc.conditionalObligation }}
                         </div>
                         {% endif %}
                     </td>
-                    <td>{% inplace_edit 'deinc.cardinality' %}</td>
-                    <td>{% inplace_edit 'deinc.maximumOccurances' %}</td>
+                    <td>{{ deinc.cardinality }}</td>
+                    <td>{{ deinc.maximumOccurances }}</td>
                     {% if item|can_edit:request.user %}
                     <td>
                         <a href="{% url 'aristotle_dse:removeDataElementFromDSS' deinc.dataElement.id item.id %}"

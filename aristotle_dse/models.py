@@ -4,8 +4,8 @@ from django.db import models
 from django.utils.translation import ugettext as _
 from model_utils import Choices
 
-from tinymce.models import HTMLField
 import aristotle_mdr as aristotle
+from aristotle_mdr.models import RichTextField
 
 FREQUENCY = Choices( ('annually', _('Annually')),
         ('biannually', _('Biannually')),
@@ -50,7 +50,7 @@ class DSSDEInclusion(aristotle.models.aristotleComponent):
     dss = models.ForeignKey(DataSetSpecification,related_name="dataElements")
     maximumOccurances = models.PositiveIntegerField(default=1)
     cardinality = models.CharField(choices=CARDINALITY, default=CARDINALITY.conditional,max_length=20)
-    specificInformation = HTMLField(blank=True) # may need to become HTML field.
+    specificInformation = RichTextField(blank=True) # may need to become HTML field.
     conditionalObligation = models.TextField(blank=True)
     order = models.PositiveSmallIntegerField("Position",null=True,blank=True)
     ordered = models.BooleanField(default=False)

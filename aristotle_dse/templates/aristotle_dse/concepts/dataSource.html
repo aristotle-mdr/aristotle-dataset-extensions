@@ -1,5 +1,5 @@
 {% extends "aristotle_mdr/managedContent.html" %}
-{% load inplace_edit %}
+
 
 {% block asideContent %}
     <dl>
@@ -11,19 +11,19 @@
 {% endblock %}
 
 {% block objSpecific %}
-<strong>Data is available at </strong><a href="{{ item.linkToData }}">{% inplace_edit 'item.linkToData' %}</a>.
+<strong>Data is available at </strong><a href="{{ item.linkToData }}">{{ item.linkToData }}</a>.
 For more access contact the data custodian listed below.
 
 <h2>Data source details</h2>
 <dl class="">
     {% if item.qualityStatement %}
     <dt>Quality Statement</dt>
-        <dd><a href="{% url 'comet:qualitystatement' iid=item.qualityStatement.id %}">{% inplace_edit 'item.qualityStatement' %}</a></dd>
+        <dd><a href="{% url 'comet:qualitystatement' iid=item.qualityStatement.id %}">{{ item.qualityStatement }}</a></dd>
     {% endif %}
     <dt>Data Custodian</dt>
-    <dd>{% inplace_edit 'item.custodian' %}</dd>
+    <dd>{{ item.custodian }}</dd>
     <dt>Frequency</dt>
-    <dd>{% inplace_edit 'item.frequency' %}</dd>
+    <dd>{{ item.frequency }}</dd>
 </dl>
 
 {% endblock %}
