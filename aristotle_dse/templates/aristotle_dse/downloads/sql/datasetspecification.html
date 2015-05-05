@@ -1,0 +1,6 @@
+{% load dataset_sql %}
+CREATE TABLE {{ item|table_name }} (
+{% for deinc in item.dataElements.all %}
+    {{ deinc.dataElement|column_name }} {{deinc|column_data_type}} {%if not forloop.last%},{%endif%}
+{% endfor %}
+);

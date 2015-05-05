@@ -1,13 +1,7 @@
 from django.contrib import admin
-from aristotle_mdr import admin as aristotle_admin # Must include 'admin' directly, otherwise causes issues.
 import aristotle_dse
 
-
-class DataSourceAdmin(aristotle_admin.ConceptAdmin):
-    fieldsets = aristotle_admin.ConceptAdmin.fieldsets + [
-            ('Data Source',
-                {'fields': ['linkToData','custodian','frequency',]}),
-    ]
+from aristotle_mdr.register import register_concept
 
 class DSSDEInclusionInline(admin.TabularInline):
     model=aristotle_dse.models.DSSDEInclusion
@@ -18,8 +12,11 @@ class DSSDEInclusionInline(admin.TabularInline):
         'fk': ['dataElement']
     }
 
-class DataSetSpecification(aristotle_admin.ConceptAdmin):
-    inlines = aristotle_admin.ConceptAdmin.inlines + [DSSDEInclusionInline, ]
+register_concept(aristotle_dse.models.DataSetSpecification,
+    extra_inlines=[DSSDEInclusionInline,])
 
-admin.site.register(aristotle_dse.models.DataSetSpecification,DataSetSpecification)
-admin.site.register(aristotle_dse.models.DataSource,DataSourceAdmin)
+register_concept(aristotle_dse.models.DataSource,
+    extra_fieldsets=[
+            ('Data Source',
+                {'fields': ['linkToData','custodian','frequency',]}),
+    ])
