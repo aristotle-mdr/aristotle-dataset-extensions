@@ -27,17 +27,11 @@ CARDINALITY = Choices(('optional', _('Optional')),('conditional', _('Conditional
 class DataSetSpecification(aristotle.models.concept):
     template = "aristotle_dse/concepts/dataSetSpecification.html"
     def addDataElement(self,dataElement,**kwargs):
-        if kwargs:
-            inc = DSSDEInclusion.objects.get_or_create(
-                dataElement=dataElement,
-                dss = self,
-                defaults = kwargs
-                )
-        else:
-            inc = DSSDEInclusion.objects.get_or_create(
-                dataElement=dataElement,
-                dss = self
-                )
+        inc = DSSDEInclusion.objects.get_or_create(
+            dataElement=dataElement,
+            dss = self,
+            defaults = kwargs
+            )
 
     @property
     def registryCascadeItems(self):
@@ -50,6 +44,7 @@ class DataSetSpecification(aristotle.models.concept):
             'dataElements':(de.dataElement for de in des),
             'valueDomains':set(de.dataElement.valueDomain for de in des),
         }
+
 # Holds the link between a DSS and a Data Element with the DSS Specific details.
 class DSSDEInclusion(aristotle.models.aristotleComponent):
     dataElement = models.ForeignKey(aristotle.models.DataElement,related_name="dssInclusions")
