@@ -40,3 +40,11 @@ class DataSetSpecificationViewPage(LoggedInViewDSSConceptPages,TestCase):
         self.logout()
         response = self.client.get(self.get_help_page())
         self.assertEqual(response.status_code,200)
+    def test_add_data_element(self):
+        de = aristotle.models.DataElement.objects.get_or_create(name="Person-sex, Code N",
+            workgroup=self.wg1,description="The sex of the person with a code.",
+            )
+        self.item1.addDataElement(self,de):
+        self.assertTrue(self.dataElements.count(),1)
+
+
