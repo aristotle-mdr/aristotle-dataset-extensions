@@ -15,7 +15,7 @@ class LoggedInViewDSSConceptPages(LoggedInViewConceptPages):
     def get_help_page(self):
         return reverse('aristotle_dse:about',args=[self.item1._meta.model_name])
 
-class DataSetSpecificationVisibility(TestCase,ManagedObjectVisibility):
+class DataSetSpecificationVisibility(ManagedObjectVisibility,TestCase):
     def setUp(self):
         super(DataSetSpecificationVisibility, self).setUp()
         self.wg = MDR.Workgroup.objects.create(name="Setup WG")
