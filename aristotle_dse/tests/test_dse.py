@@ -18,7 +18,6 @@ class LoggedInViewDSSConceptPages(LoggedInViewConceptPages):
 class DataSetSpecificationVisibility(ManagedObjectVisibility,TestCase):
     def setUp(self):
         super(DataSetSpecificationVisibility, self).setUp()
-        self.wg = MDR.Workgroup.objects.create(name="Setup WG")
         self.item = models.DataSetSpecification.objects.create(name="Test DSS",
             workgroup=self.wg,
             )
@@ -41,7 +40,7 @@ class DataSetSpecificationViewPage(LoggedInViewDSSConceptPages,TestCase):
         response = self.client.get(self.get_help_page())
         self.assertEqual(response.status_code,200)
     def test_add_data_element(self):
-        de = aristotle.models.DataElement.objects.get_or_create(name="Person-sex, Code N",
+        de = MDR.DataElement.objects.get_or_create(name="Person-sex, Code N",
             workgroup=self.wg1,description="The sex of the person with a code.",
             )
         self.item1.addDataElement(self,de)
