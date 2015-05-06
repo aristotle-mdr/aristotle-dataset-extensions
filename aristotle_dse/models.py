@@ -44,6 +44,7 @@ class DataSetSpecification(aristotle.models.concept):
             'dataElements':(de.dataElement for de in des),
             'valueDomains':set(de.dataElement.valueDomain for de in des),
         }
+
 # Holds the link between a DSS and a Data Element with the DSS Specific details.
 class DSSDEInclusion(aristotle.models.aristotleComponent):
     dataElement = models.ForeignKey(aristotle.models.DataElement,related_name="dssInclusions")

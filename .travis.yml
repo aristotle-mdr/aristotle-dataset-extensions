@@ -1,0 +1,23 @@
+language: python
+python:
+  - "2.7"
+
+env:
+  - DJANGO=1.7
+  - DJANGO=1.8
+
+before_install:
+  - npm install -g less@1.7.4 # Required for static-precompiler
+
+install:
+  - "pip install coveralls"
+  - "pip install -r requirements.txt"
+  - "pip install ."
+  - pip install -q Django==$DJANGO --use-mirrors
+  - "pip install django_tools"
+
+# command to run tests
+script:
+  - coverage run --branch --source=aristotle_dse manage.py test
+after_success:
+  - coveralls
