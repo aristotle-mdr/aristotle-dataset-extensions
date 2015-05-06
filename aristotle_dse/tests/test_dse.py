@@ -43,7 +43,7 @@ class DataSetSpecificationViewPage(LoggedInViewDSSConceptPages,TestCase):
         de = MDR.DataElement.objects.get_or_create(name="Person-sex, Code N",
             workgroup=self.wg1,description="The sex of the person with a code.",
             )
-        self.item1.addDataElement(self,de)
+        self.item1.addDataElement(de)
         self.assertTrue(self.dataElements.count(),1)
 
 
