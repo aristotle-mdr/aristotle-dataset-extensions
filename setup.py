@@ -15,7 +15,7 @@ setup(
     license='BSD Licence',
     description='',
     long_description=README,
-    url='https://github.com/LegoStormtroopr/aristotle-dataset-extensions',
+    url='https://github.com/aristotle-mdr/aristotle-dataset-extensions',
     author='Samuel Spencer',
     author_email='sam@sqbl.org',
     classifiers=[
@@ -29,7 +29,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     install_requires = [
-        'aristotle_mdr'
+        'django-aristotle-metadata-registry'
     ]
 
 )
