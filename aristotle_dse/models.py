@@ -26,6 +26,7 @@ class DataSource(aristotle.models.concept):
 CARDINALITY = Choices(('optional', _('Optional')),('conditional', _('Conditional')), ('mandatory', _('Mandatory')))
 class DataSetSpecification(aristotle.models.concept):
     template = "aristotle_dse/concepts/dataSetSpecification.html"
+    ordered = models.BooleanField(default=False,help_text=_("Indiciates if the ordering for a dataset is must match exactly the order laid out in the specification."))
     def addDataElement(self,dataElement,**kwargs):
         inc = DSSDEInclusion.objects.get_or_create(
             dataElement=dataElement,
@@ -54,7 +55,6 @@ class DSSDEInclusion(aristotle.models.aristotleComponent):
     specificInformation = RichTextField(blank=True) # may need to become HTML field.
     conditionalObligation = models.TextField(blank=True)
     order = models.PositiveSmallIntegerField("Position",null=True,blank=True)
-    ordered = models.BooleanField(default=False)
 
     @property
     def parentItem(self):

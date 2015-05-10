@@ -13,6 +13,10 @@ class DSSDEInclusionInline(admin.TabularInline):
     }
 
 register_concept(aristotle_dse.models.DataSetSpecification,
+    extra_fieldsets=[
+            ('Ordering',
+                {'fields': ['ordered',]}),
+    ],
     extra_inlines=[DSSDEInclusionInline,])
 
 register_concept(aristotle_dse.models.DataSource,
