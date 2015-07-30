@@ -67,11 +67,11 @@ class DSSDEInclusion(aristotle.models.aristotleComponent):
 def testData():
     pw,c = aristotle.models.Workgroup.objects.get_or_create(name="Possum Workgroup")
     de,c = aristotle.models.DataElement.objects.get_or_create(name="Person-sex, Code N",
-            workgroup=pw,description="The sex of the person with a code.",
+            workgroup=pw,definition="The sex of the person with a code.",
             )
 
     dss,c = DataSetSpecification.objects.get_or_create(name="Person Dataset",
-        workgroup=pw,description="",
+        workgroup=pw,definition="",
         )
     for de in aristotle.models.DataElement.objects.all():
         dss.addDataElement(de)

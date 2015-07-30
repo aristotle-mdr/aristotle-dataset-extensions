@@ -41,7 +41,7 @@ class DataSetSpecificationViewPage(LoggedInViewDSSConceptPages,TestCase):
         self.assertEqual(response.status_code,200)
     def test_add_data_element(self):
         de,created = MDR.DataElement.objects.get_or_create(name="Person-sex, Code N",
-            workgroup=self.wg1,description="The sex of the person with a code.",
+            workgroup=self.wg1,definition="The sex of the person with a code.",
             )
         self.item1.addDataElement(de)
         self.assertTrue(self.item1.dataElements.count(),1)
