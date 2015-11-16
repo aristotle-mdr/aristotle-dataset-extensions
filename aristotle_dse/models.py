@@ -27,9 +27,9 @@ CARDINALITY = Choices(('optional', _('Optional')),('conditional', _('Conditional
 class DataSetSpecification(aristotle.models.concept):
     template = "aristotle_dse/concepts/dataSetSpecification.html"
     ordered = models.BooleanField(default=False,help_text=_("Indiciates if the ordering for a dataset is must match exactly the order laid out in the specification."))
-    statistical_unit = models.ForeignKey(aristotle.models.concept,blank=True,null=True,help_text=_("Indiciates if the ordering for a dataset is must match exactly the order laid out in the specification."))
+    statistical_unit = models.ForeignKey(aristotle.models._concept,related_name='statistical_unit_of',blank=True,null=True,help_text=_("Indiciates if the ordering for a dataset is must match exactly the order laid out in the specification."))
     data_elements = models.ManyToManyField(aristotle.models.DataElement,through='DSSDEInclusion')
-    clusters = models.ManyToManyField('self',through='DSSClusterInclusion')
+    clusters = models.ManyToManyField('self',through='DSSClusterInclusion', symmetrical=False)
     collection_method = aristotle.models.RichTextField(blank=True,help_text=_(''))
     implementation_start_date = models.DateField(blank=True,null=True,
             help_text=_(''))
@@ -77,7 +77,10 @@ class DSSDEInclusion(DSSInclusion):
 
 # Holds the link between a DSS and a cluster with the DSS Specific details.
 class DSSClusterInclusion(DSSInclusion):
-    child = models.ForeignKey(DataSetSpecification)
+    """
+    The child in this relationship is considered to be a child of the parent DSS as specified by the `dss` property.
+    """
+    child = models.ForeignKey(DataSetSpecification,related_name='parent_dss')
 
 
 def testData():

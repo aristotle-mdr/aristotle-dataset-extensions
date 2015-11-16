@@ -7,9 +7,9 @@ class DSSDEInclusionInline(admin.TabularInline):
     model=aristotle_dse.models.DSSDEInclusion
     extra=0
     classes = ('grp-collapse grp-closed',)
-    raw_id_fields = ('dataElement',)
+    raw_id_fields = ('data_element',)
     autocomplete_lookup_fields = {
-        'fk': ['dataElement']
+        'fk': ['data_element']
     }
 
 register_concept(aristotle_dse.models.DataSetSpecification,
