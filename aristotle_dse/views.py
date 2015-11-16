@@ -1,4 +1,4 @@
-from aristotle_mdr.perms import user_can_view, user_can_edit, user_in_workgroup, user_is_workgroup_manager, user_can_change_status
+﻿from aristotle_mdr.perms import user_can_view, user_can_edit, user_in_workgroup, user_is_workgroup_manager, user_can_change_status
 
 from django.shortcuts import render, get_object_or_404
 import aristotle_mdr as aristotle
@@ -40,7 +40,8 @@ def addDataElementsToDSS(request,dss_id):
              "form":form,
                 }
             )
-
+def removeClusterFromDSS(request,cluster_id,dss_id):
+    pass
 def removeDataElementFromDSS(request,de_id,dss_id):
     de = get_object_or_404(aristotle.models.DataElement,id=de_id)
     dss = get_object_or_404(aristotle_dse.models.DataSetSpecification,id=dss_id)

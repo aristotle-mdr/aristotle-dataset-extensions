@@ -15,13 +15,8 @@
             <i class="fa fa-plus"></i>
             Add a data element to this data set specification
         </a>
-        <div id="addDEtoDSS" class="modal fade">
-          <div class="modal-dialog">
-              <div class="modal-content">
-              </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
-
+        {% bootstrap_modal 'addDEtoDSS' %}
+        
     {% endif %}
     <script>
         $(function () {
@@ -29,7 +24,7 @@
         })
     </script>
 
-    {% if item.dataElements.all %}
+    {% if item.dataelement_set.exists or item.cluster_set.exists %}
         <table class="dssInclusions table table-striped table-condensed">
             <thead>
                 <tr>
@@ -48,8 +43,40 @@
                     {% if item|can_edit:request.user %}<th title="Use the links in this column to remove data elements from this Dataset specification"><i class="fa fa-trash-o"></i></th>{% endif %}
                 </tr>
             </thead>
+            {% if item.cluster_set.exists %}
             <tbody>
-            {% for deinc in item.dataElements.all %}
+            {% for deinc in item.cluster_set.all %}
+                <tr>
+                    <td></td>
+                    <td>{% include "aristotle_mdr/helpers/itemLink.html" with item=deinc.dataElement %}
+                        {% if deinc.specificInformation %}
+                        <div>
+                            {{ deinc.specificInformation | safe }}
+                        </div>
+                        {% endif %}
+                        {% if deinc.conditionalObligation %}
+                        <div>
+                            <strong>Conditional Obligation:</strong>{{ deinc.conditionalObligation }}
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>{{ deinc.cardinality }}</td>
+                    <td>{{ deinc.maximumOccurances }}</td>
+                    {% if item|can_edit:request.user %}
+                    <td>
+                        <a href="{% url 'aristotle_dse:removeClusterFromDSS' deinc.child.id item.id %}"
+                        class="close" title="Remove from Dataset specification">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+            {% endif %}
+            {% if item.dataelement_set.exists %}
+            <tbody>
+            {% for deinc in item.dataelement_set.all %}
                 <tr>
                     <td></td>
                     <td>{% include "aristotle_mdr/helpers/itemLink.html" with item=deinc.dataElement %}
@@ -77,6 +104,7 @@
                 </tr>
             {% endfor %}
             </tbody>
+            {% endif %}
             <tfoot>
                 <tr>
                     <th></th>

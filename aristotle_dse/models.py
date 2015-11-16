@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+﻿from __future__ import unicode_literals
 
 from django.db import models
 from django.utils.translation import ugettext as _
@@ -27,6 +27,15 @@ CARDINALITY = Choices(('optional', _('Optional')),('conditional', _('Conditional
 class DataSetSpecification(aristotle.models.concept):
     template = "aristotle_dse/concepts/dataSetSpecification.html"
     ordered = models.BooleanField(default=False,help_text=_("Indiciates if the ordering for a dataset is must match exactly the order laid out in the specification."))
+    statistical_unit = models.ForeignKey(aristotle.models.concept,blank=True,null=True,help_text=_("Indiciates if the ordering for a dataset is must match exactly the order laid out in the specification."))
+    data_elements = models.ManyToManyField(aristotle.models.DataElement,through='DSSDEInclusion')
+    clusters = models.ManyToManyField('self',through='DSSClusterInclusion')
+    collection_method = aristotle.models.RichTextField(blank=True,help_text=_(''))
+    implementation_start_date = models.DateField(blank=True,null=True,
+            help_text=_(''))
+    implementation_end_date = models.DateField(blank=True,null=True,
+            help_text=_(''))
+
     def addDataElement(self,dataElement,**kwargs):
         inc = DSSDEInclusion.objects.get_or_create(
             dataElement=dataElement,
@@ -36,32 +45,39 @@ class DataSetSpecification(aristotle.models.concept):
 
     @property
     def registryCascadeItems(self):
-        return [i.dataElement for i in self.dataElements.all()]
+        return list(self.clusters.all())+list(self.data_elements.all())
 
     @property
     def getPdfItems(self):
-        des = self.dataElements.all()
+        des = self.data_elements.all()
         return {
-            'dataElements':(de.dataElement for de in des),
-            'valueDomains':set(de.dataElement.valueDomain for de in des),
+            'dataElements':des,
+            'valueDomains':set(de.valueDomain for de in des),
         }
 
-# Holds the link between a DSS and a Data Element with the DSS Specific details.
-class DSSDEInclusion(aristotle.models.aristotleComponent):
-    dataElement = models.ForeignKey(aristotle.models.DataElement,related_name="dssInclusions")
-    dss = models.ForeignKey(DataSetSpecification,related_name="dataElements")
+class DSSInclusion(aristotle.models.aristotleComponent):
+    class Meta:
+        abstract=True
+    @property
+    def parentItem(self):
+        return self.dss
+
+    dss = models.ForeignKey(DataSetSpecification)
     maximumOccurances = models.PositiveIntegerField(default=1)
     cardinality = models.CharField(choices=CARDINALITY, default=CARDINALITY.conditional,max_length=20)
     specificInformation = RichTextField(blank=True) # may need to become HTML field.
     conditionalObligation = models.TextField(blank=True)
     order = models.PositiveSmallIntegerField("Position",null=True,blank=True)
 
-    @property
-    def parentItem(self):
-        return self.dss
-
+# Holds the link between a DSS and a Data Element with the DSS Specific details.
+class DSSDEInclusion(DSSInclusion):
+    data_element = models.ForeignKey(aristotle.models.DataElement,related_name="dssInclusions")
     class Meta:
         verbose_name = "DSS Data Element Inclusion"
+
+# Holds the link between a DSS and a cluster with the DSS Specific details.
+class DSSClusterInclusion(DSSInclusion):
+    child = models.ForeignKey(DataSetSpecification)
 
 
 def testData():

@@ -1,4 +1,4 @@
-import autocomplete_light
+﻿import autocomplete_light
 autocomplete_light.autodiscover()
 
 from django.conf.urls import patterns, url
@@ -10,6 +10,7 @@ urlpatterns = patterns('aristotle_dse.views',
     url(r'^datasetspecification/(?P<iid>\d+)/?$', views.datasetspecification, name='dataSetSpecification'),
     url(r'^add/deToDss/(?P<dss_id>\d+)', views.addDataElementsToDSS, name='addDataElementsToDSS'),
     url(r'^remove/deFromDss/(?P<de_id>\d+)/(?P<dss_id>\d+)', views.removeDataElementFromDSS, name='removeDataElementFromDSS'),
+    url(r'^remove/clusterFromDss/(?P<cluster_id>\d+)/(?P<dss_id>\d+)', views.removeClusterFromDSS, name='removeClusterFromDSS'),
 
 #These are required for about pages to work. Include them, or custom items will die!
     url(r'^about/(?P<template>.+)/?$', views.DynamicTemplateView.as_view(), name="about"),
