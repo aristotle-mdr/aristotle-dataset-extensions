@@ -1,4 +1,4 @@
-﻿from __future__ import unicode_literals
+from __future__ import unicode_literals
 
 from django.db import models
 from django.utils.translation import ugettext as _
@@ -36,9 +36,16 @@ class DataSetSpecification(aristotle.models.concept):
     implementation_end_date = models.DateField(blank=True,null=True,
             help_text=_(''))
 
-    def addDataElement(self,dataElement,**kwargs):
+    def addDataElement(self,data_element,**kwargs):
         inc = DSSDEInclusion.objects.get_or_create(
-            dataElement=dataElement,
+            data_element=data_element,
+            dss = self,
+            defaults = kwargs
+            )
+
+    def addCluster(self,child,**kwargs):
+        inc = DSSClusterInclusion.objects.get_or_create(
+            child=child,
             dss = self,
             defaults = kwargs
             )
@@ -92,5 +99,13 @@ def testData():
     dss,c = DataSetSpecification.objects.get_or_create(name="Person Dataset",
         workgroup=pw,definition="",
         )
-    for de in aristotle.models.DataElement.objects.all():
-        dss.addDataElement(de)
+    dss.addDataElement(de)
+
+    dss_cluster,c = DataSetSpecification.objects.get_or_create(name="Person cluster",
+        workgroup=pw,definition="",
+        )
+    de,c = aristotle.models.DataElement.objects.get_or_create(name="Person-Identifier, Code NNN",
+            workgroup=pw,definition="The identifier for a person.",
+            )
+    dss_cluster.addDataElement(de)
+    dss.addCluster(dss_cluster)

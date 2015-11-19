@@ -1,12 +1,13 @@
 {% load aristotle_tags %}
 
 <h3>Inclusion in Data Set Specifications</h3>
-{% if item.dssInclusions.count > 0 %}
+
+{% if item.dssInclusions.exists %}
 This data element is included in the following Dataset specifications, some datasets may be hidden based on your current permissions.
 <ul>
     {% for inclusion in item.dssInclusions.all %}
         {% if inclusion.dss|can_view:user %}
-        <li>{% include "aristotle_mdr/helpers/itemLink.html" with item=inclusion.dss %} ({{ inclusion.cardinality }})</li>
+            <li>{% include "aristotle_mdr/helpers/inlineDetails.html" with item=inclusion.dss %} ({{ inclusion.cardinality }})</li>
         {% endif %}
     {% endfor %}
 </ul>
