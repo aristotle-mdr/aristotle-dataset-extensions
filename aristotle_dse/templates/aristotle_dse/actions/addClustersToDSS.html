@@ -1,0 +1,30 @@
+{% extends request.is_ajax|yesno:"aristotle_mdr/base_ajax.html,aristotle_mdr/base.html" %}
+
+{% block title %}Add Data set cluster to <strong>{{ item.name }}</strong>{% endblock %}
+
+{% block content %}
+
+<form method="post" action="{% url 'aristotle_dse:addClustersToDSS' dss_id=item.id %}">{% csrf_token %}
+<div class="modal-body">
+<header>This form allows you to deprecate older items item, by indicating a new version exists.
+        This will state the newest version of the selected items is <em>{{ item.name }}</em>
+</header>
+<section style="height:50%;" id=''>
+{{ form.as_p }}
+
+{% block save %}
+{% endblock %}
+
+</section>
+    <div class="modal-footer">
+    {% if request.is_ajax %}
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    {% else %}
+        <a class="btn btn-default" href="{% url 'aristotle:item' iid=item.id%}">Cancel</a>
+    {% endif %}
+        <input type="submit" class="btn btn-primary" value="Add to Dataset Specification" />
+    </div>
+</form>
+{% include 'autocomplete_light/static.html' %}
+</div>
+{% endblock %}

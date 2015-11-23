@@ -24,3 +24,23 @@ class AddDataElementsToDSSForm(forms.Form):
         dataElements = self.cleaned_data['dataElements']
         cleaned = [de for de in dataElements if user_can_view(self.user,de)]
         return cleaned
+
+class AddClustersToDSSForm(forms.Form):
+    cardinality = forms.ChoiceField(choices=CARDINALITY,widget=forms.RadioSelect)
+    maximum_occurances = forms.IntegerField(min_value=1,initial=1)
+
+    def __init__(self, *args, **kwargs):
+        self.qs = kwargs.pop('qs')
+        self.dss = kwargs.pop('dss')
+        self.user = kwargs.pop('user')
+        super(AddClustersToDSSForm, self).__init__(*args, **kwargs)
+        self.fields['clusters']=forms.ModelMultipleChoiceField(
+                queryset=self.qs,
+                label="Add Clusters",
+                widget=autocomplete_light.MultipleChoiceWidget("AutocompleteDataSetSpecification")
+                )
+
+    def clean_dataElements(self):
+        clusters = self.cleaned_data['clusters']
+        cleaned = [dss for dss in clusters if user_can_view(self.user,dss)]
+        return cleaned

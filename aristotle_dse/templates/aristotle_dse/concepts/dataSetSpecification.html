@@ -17,6 +17,14 @@
         </a>
         {% bootstrap_modal 'addDEtoDSS' %}
         
+        <a href="{% url 'aristotle_dse:addClustersToDSS' dss_id=item.id %}"
+            data-toggle="modal" data-target="#addClusterstoDSS"
+            class="btn btn-primary">
+            <i class="fa fa-plus"></i>
+            Add a cluster to this data set specification
+        </a>
+        {% bootstrap_modal 'addClusterstoDSS' %}
+
     {% endif %}
     <script>
         $(function () {
