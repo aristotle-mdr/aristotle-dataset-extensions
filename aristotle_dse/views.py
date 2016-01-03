@@ -50,6 +50,29 @@ def removeDataElementFromDSS(request,de_id,dss_id):
         raise PermissionDenied
     return HttpResponseRedirect(reverse("aristotle_dse:%s"%dss.template_name(),args=[dss.id]))
 
+def editDataElementsInclusion(request,dss_id,de_id):
+    dss = get_object_or_404(aristotle_dse.models.DataSetSpecification,id=dss_id)
+    de=get_object_or_404(aristotle.models.DataElement,id=de_id)
+    if not (user_can_edit(request.user,dss) and user_can_view(request.user,de)):
+        raise PermissionDenied
+    inclusion = get_object_or_404(aristotle_dse.models.DSSDEInclusion,dataElement = de,dss = dss)
+
+
+    if request.method == 'POST': # If the form has been submitted...
+        form = forms.EditDataElementsInclusionForm(request.POST,instance=inclusion)#,user=request.user)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("aristotle_dse:dataSetSpecification",args=[dss.id]))
+    else:
+        form = forms.EditDataElementsInclusionForm(instance=inclusion)#,user=request.user)
+
+    return render(request,"aristotle_dse/actions/edit_dataelement_inclusions.html",
+            {"item":inclusion,
+             "form":form,
+                }
+            )
+
+
 class DynamicTemplateView(TemplateView):
     def get_template_names(self):
         return ['aristotle_dse/static/%s.html' % self.kwargs['template']]

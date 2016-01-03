@@ -3,10 +3,10 @@ autocomplete_light.autodiscover()
 
 from django import forms
 from aristotle_mdr.perms import user_can_view, user_can_edit
-from aristotle_dse.models import CARDINALITY
+from aristotle_dse import models
 
 class AddDataElementsToDSSForm(forms.Form):
-    cardinality = forms.ChoiceField(choices=CARDINALITY,widget=forms.RadioSelect)
+    cardinality = forms.ChoiceField(choices=models.CARDINALITY,widget=forms.RadioSelect)
     maximum_occurances = forms.IntegerField(min_value=1,initial=1)
                 #widget=forms.CheckboxSelectMultiple)
     def __init__(self, *args, **kwargs):
@@ -24,3 +24,8 @@ class AddDataElementsToDSSForm(forms.Form):
         dataElements = self.cleaned_data['dataElements']
         cleaned = [de for de in dataElements if user_can_view(self.user,de)]
         return cleaned
+
+class EditDataElementsInclusionForm(forms.ModelForm):
+    class Meta:
+        model = models.DSSDEInclusion
+        fields = ['maximumOccurances', 'cardinality', 'specificInformation', 'conditionalObligation']

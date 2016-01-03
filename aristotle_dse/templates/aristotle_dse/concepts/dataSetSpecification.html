@@ -45,7 +45,13 @@
                             title="Maximum Occurances" data-content="The maximum number of times a data element may be repeated in a data set.">
                             #</a>
                     </th>
-                    {% if item|can_edit:request.user %}<th title="Use the links in this column to remove data elements from this Dataset specification"><i class="fa fa-trash-o"></i></th>{% endif %}
+                    {% if item|can_edit:request.user %}
+                    <th title="Use the links in this column to edit or remove data elements from this Dataset specification">
+                        <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-placement="left"
+                            title="Edit or delete" data-content="Use the links in this column to edit or remove data elements from this Dataset specification.">
+                            Edit</a>
+                    </th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -68,9 +74,13 @@
                     <td>{{ deinc.maximumOccurances }}</td>
                     {% if item|can_edit:request.user %}
                     <td>
+                        <a href="{% url 'aristotle_dse:editInclusion' item.id deinc.dataElement.id %}"
+                        class="close" title="Edit inclusion in this Dataset specification">
+                            <i class="fa fa-fw fa-pencil"></i>
+                        </a>
                         <a href="{% url 'aristotle_dse:removeDataElementFromDSS' deinc.dataElement.id item.id %}"
                         class="close" title="Remove from Dataset specification">
-                            <i class="fa fa-times"></i>
+                            <i class="fa fa-fw fa-times"></i>
                         </a>
                     </td>
                     {% endif %}
@@ -83,7 +93,11 @@
                     <th>Data Element</th>
                     <th>Inclusion</th>
                     <th title="Maximum Occurances">#</th>
-                    {% if item|can_edit:request.user %}<th><i class="fa fa-trash-o"></i></th>{% endif %}
+                    {% if item|can_edit:request.user %}
+                    <th>
+                        Edit
+                    </th>
+                    {% endif %}
                 </tr>
             </tfoot>
         </table>
