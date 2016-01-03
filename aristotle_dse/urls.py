@@ -9,8 +9,11 @@ from aristotle_dse import views
 urlpatterns = patterns('aristotle_dse.views',
     url(r'^datasetspecification/(?P<iid>\d+)/?$', views.datasetspecification, name='dataSetSpecification'),
     url(r'^add/deToDss/(?P<dss_id>\d+)', views.addDataElementsToDSS, name='addDataElementsToDSS'),
+    url(r'^add/clustersToDss/(?P<dss_id>\d+)', views.addClustersToDSS, name='addClustersToDSS'),
     url(r'^remove/deFromDss/(?P<de_id>\d+)/(?P<dss_id>\d+)', views.removeDataElementFromDSS, name='removeDataElementFromDSS'),
-    url(r'^edit_inclusion/(?P<dss_id>\d+)/(?P<de_id>\d+)', views.editDataElementsInclusion, name='editInclusion'),
+    url(r'^remove/clusterFromDss/(?P<cluster_id>\d+)/(?P<dss_id>\d+)', views.removeClusterFromDSS, name='removeClusterFromDSS'),
+    url(r'^dss/edit_de_inclusion/(?P<dss_id>\d+)/(?P<de_id>\d+)', views.editDataElementInclusion, name='editDEInclusion'),
+    url(r'^dss/edit_cluster_inclusion/(?P<dss_id>\d+)/(?P<cluster_id>\d+)', views.editClusterInclusion, name='editDSSInclusion'),
 
 #These are required for about pages to work. Include them, or custom items will die!
     url(r'^about/(?P<template>.+)/?$', views.DynamicTemplateView.as_view(), name="about"),

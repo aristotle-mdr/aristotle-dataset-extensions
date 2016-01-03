@@ -25,7 +25,33 @@ class AddDataElementsToDSSForm(forms.Form):
         cleaned = [de for de in dataElements if user_can_view(self.user,de)]
         return cleaned
 
-class EditDataElementsInclusionForm(forms.ModelForm):
+class EditDataElementInclusionForm(forms.ModelForm):
     class Meta:
         model = models.DSSDEInclusion
-        fields = ['maximumOccurances', 'cardinality', 'specificInformation', 'conditionalObligation']
+        fields = ['maximum_occurances', 'cardinality', 'specific_information', 'conditional_obligation']
+
+class EditClusterInclusionForm(forms.ModelForm):
+    class Meta:
+        model = models.DSSClusterInclusion
+        fields = ['maximum_occurances', 'cardinality', 'specific_information', 'conditional_obligation']
+
+
+class AddClustersToDSSForm(forms.Form):
+    cardinality = forms.ChoiceField(choices=models.CARDINALITY,widget=forms.RadioSelect)
+    maximum_occurances = forms.IntegerField(min_value=1,initial=1)
+
+    def __init__(self, *args, **kwargs):
+        self.qs = kwargs.pop('qs')
+        self.dss = kwargs.pop('dss')
+        self.user = kwargs.pop('user')
+        super(AddClustersToDSSForm, self).__init__(*args, **kwargs)
+        self.fields['clusters']=forms.ModelMultipleChoiceField(
+                queryset=self.qs,
+                label="Add Clusters",
+                widget=autocomplete_light.MultipleChoiceWidget("AutocompleteDataSetSpecification")
+                )
+
+    def clean_dataElements(self):
+        clusters = self.cleaned_data['clusters']
+        cleaned = [dss for dss in clusters if user_can_view(self.user,dss)]
+        return cleaned
