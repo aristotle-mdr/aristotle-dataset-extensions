@@ -38,6 +38,7 @@
             {% if field.field.required %}
             <span class="sr-only">required</span>
             <span class="">*</span>
+            {% endif %}
           </label>
           {% if field.help_text %}
             <span class="help-block">{{ field.help_text }}</span>
