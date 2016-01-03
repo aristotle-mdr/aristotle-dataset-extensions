@@ -6,26 +6,12 @@ services:
  #- mysql
  - postgresql
 env:
-  - DJ=1.8 DB=sqlitememory TEST=main
-  - DJ=1.8 DB=sqlitefile   TEST=main
-  - DJ=1.8 DB=postgres     TEST=main
-#  - DJ=1.9 DB=sqlitememory TEST=main
-#  - DJ=1.9 DB=sqlitefile   TEST=main
-#  - DJ=1.9 DB=postgres     TEST=main
-
-  - DJ=1.8 DB=sqlitememory TEST=extensions
-  - DJ=1.8 DB=sqlitefile   TEST=extensions
-  - DJ=1.8 DB=postgres     TEST=extensions
-#  - DJ=1.9 DB=sqlitememory TEST=extensions
-#  - DJ=1.9 DB=sqlitefile   TEST=extensions
-#  - DJ=1.9 DB=postgres     TEST=extensions
-
-  - DJ=1.8 DB=sqlitememory TEST=querysets
-  - DJ=1.8 DB=sqlitefile   TEST=querysets
-  - DJ=1.8 DB=postgres     TEST=querysets
-#  - DJ=1.9 DB=sqlitememory TEST=querysets
-#  - DJ=1.9 DB=sqlitefile   TEST=querysets
-#  - DJ=1.9 DB=postgres     TEST=querysets
+  - DJ=1.8 DB=sqlitememory
+  - DJ=1.8 DB=sqlitefile
+  - DJ=1.8 DB=postgres
+#  - DJ=1.9 DB=sqlitememory
+#  - DJ=1.9 DB=sqlitefile
+#  - DJ=1.9 DB=postgres   
 
 #  - DJ=1.9 DB=mysql
 #  - DJ=1.8 DB=mysql

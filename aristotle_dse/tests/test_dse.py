@@ -25,9 +25,9 @@ class DataSetSpecificationVisibility(ManagedObjectVisibility,TestCase):
 class DataSetSpecificationAdmin(AdminPageForConcept,TestCase):
     itemType=models.DataSetSpecification
     form_defaults={
-        'dataElements-TOTAL_FORMS':0,
-        'dataElements-INITIAL_FORMS':0,
-        'dataElements-MAX_NUM_FORMS':1,
+        'data_elements-TOTAL_FORMS':0,
+        'data_elements-INITIAL_FORMS':0,
+        'data_elements-MAX_NUM_FORMS':1,
         }
 
 class DataSetSpecificationViewPage(LoggedInViewDSSConceptPages,TestCase):
@@ -44,6 +44,6 @@ class DataSetSpecificationViewPage(LoggedInViewDSSConceptPages,TestCase):
             workgroup=self.wg1,definition="The sex of the person with a code.",
             )
         self.item1.addDataElement(de)
-        self.assertTrue(self.item1.dataElements.count(),1)
+        self.assertTrue(self.item1.data_elements.count(),1)
 
 
