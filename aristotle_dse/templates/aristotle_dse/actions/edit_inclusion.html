@@ -33,7 +33,12 @@
       {% for field in form %}
       <div class="form-group">
         <div>
-          <label class="" for="{field.name}}">{{field.label}} {{field.required}}</label>
+          <label class="" for="{field.name}}">
+            {{field.label}}
+            {% if field.field.required %}
+            <span class="sr-only">required</span>
+            <span class="">*</span>
+          </label>
           {% if field.help_text %}
             <span class="help-block">{{ field.help_text }}</span>
           {% endif %}

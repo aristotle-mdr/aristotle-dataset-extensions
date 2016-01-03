@@ -32,7 +32,6 @@ env:
 
 before_install:
   - npm install -g less@1.7.4 # Required for static-precompiler
-  - pip install codecov
 before_script:
 #  - mysql -e 'create database aristotle_test_db;'
   - psql -c 'create database aristotle_test_db;' -U postgres
@@ -40,9 +39,9 @@ install:
   - if [[ $DB == postgres ]]; then pip install -q psycopg2 --quiet --use-mirrors; fi
 #  - if [[ $DB == mysql ]]; then pip install -q mysql-python --use-mirrors; fi
   - "pip install coveralls"
+  - "pip install -r requirements.txt"
   - "pip install ."
   - pip install -q Django==$DJ --use-mirrors
-  - "pip install -r requirements.txt"
   - "pip install django_tools"
 
 # command to run tests
@@ -50,7 +49,6 @@ script:
   - coverage run --branch --source=aristotle_dse manage.py test aristotle_dse.tests
 after_success:
   - coveralls
-  - codecov
 
 # Lets run on the new infrastructure
 sudo: false
