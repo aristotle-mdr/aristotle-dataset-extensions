@@ -13,7 +13,8 @@
             {{ form.media }}
         {% endif %}
     {% endblock %}
-<form method="post" >
+
+<form method="post" action="{{request.get_full_path}}" >
     <div class="modal-body">
         <ol class="breadcrumb">
           <li><a href="{% url 'aristotle:item' item.dss.id %}">{{ item.dss.name }}</a></li>

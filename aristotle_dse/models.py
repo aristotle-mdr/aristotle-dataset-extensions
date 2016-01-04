@@ -25,16 +25,42 @@ class DataSource(aristotle.models.concept):
 
 CARDINALITY = Choices(('optional', _('Optional')),('conditional', _('Conditional')), ('mandatory', _('Mandatory')))
 class DataSetSpecification(aristotle.models.concept):
+    edit_page_excludes = ['clusters','data_elements']
     template = "aristotle_dse/concepts/dataSetSpecification.html"
-    ordered = models.BooleanField(default=False,help_text=_("Indiciates if the ordering for a dataset is must match exactly the order laid out in the specification."))
-    statistical_unit = models.ForeignKey(aristotle.models._concept,related_name='statistical_unit_of',blank=True,null=True,help_text=_("Indiciates if the ordering for a dataset is must match exactly the order laid out in the specification."))
-    data_elements = models.ManyToManyField(aristotle.models.DataElement,through='DSSDEInclusion')
-    clusters = models.ManyToManyField('self',through='DSSClusterInclusion', symmetrical=False)
-    collection_method = aristotle.models.RichTextField(blank=True,help_text=_(''))
-    implementation_start_date = models.DateField(blank=True,null=True,
-            help_text=_(''))
-    implementation_end_date = models.DateField(blank=True,null=True,
-            help_text=_(''))
+    ordered = models.BooleanField(
+            default=False,
+            help_text=_("Indiciates if the ordering for a dataset is must match exactly the order laid out in the specification.")
+            )
+    statistical_unit = models.ForeignKey(
+            aristotle.models._concept,
+            related_name='statistical_unit_of',
+            blank=True,
+            null=True,
+            help_text=_("Indiciates if the ordering for a dataset is must match exactly the order laid out in the specification.")
+            )
+    data_elements = models.ManyToManyField(
+            aristotle.models.DataElement,
+            through='DSSDEInclusion'
+            )
+    clusters = models.ManyToManyField(
+            'self',
+            through='DSSClusterInclusion',
+            symmetrical=False
+            )
+    collection_method = aristotle.models.RichTextField(
+            blank=True,
+            help_text=_('')
+            )
+    implementation_start_date = models.DateField(
+            blank=True,
+            null=True,
+            help_text=_('')
+            )
+    implementation_end_date = models.DateField(
+            blank=True,
+            null=True,
+            help_text=_('')
+            )
 
     def addDataElement(self,data_element,**kwargs):
         inc = DSSDEInclusion.objects.get_or_create(
@@ -55,16 +81,21 @@ class DataSetSpecification(aristotle.models.concept):
         return list(self.clusters.all())+list(self.data_elements.all())
 
     @property
-    def getPdfItems(self):
+    def get_download_items(self):
         des = self.data_elements.all()
-        return {
-            'dataElements':des,
-            'valueDomains':set(de.valueDomain for de in des),
-        }
+        from collections import OrderedDict
+        return OrderedDict([
+            (DataSetSpecification,self.clusters.all().order_by('name')),
+            (aristotle.models.DataElement,des.order_by('name')),
+            (aristotle.models.ObjectClass,aristotle.models.ObjectClass.objects.filter(dataelementconcept__dataelement__datasetspecification=self).order_by('name')),
+            (aristotle.models.Property,aristotle.models.Property.objects.filter(dataelementconcept__dataelement__datasetspecification=self).order_by('name')),
+            (aristotle.models.ValueDomain,aristotle.models.ValueDomain.objects.filter(dataelement__datasetspecification=self).order_by('name')),
+        ])
 
 class DSSInclusion(aristotle.models.aristotleComponent):
     class Meta:
         abstract=True
+        ordering = ['order']
     @property
     def parentItem(self):
         return self.dss
@@ -98,7 +129,7 @@ class DSSInclusion(aristotle.models.aristotleComponent):
 # Holds the link between a DSS and a Data Element with the DSS Specific details.
 class DSSDEInclusion(DSSInclusion):
     data_element = models.ForeignKey(aristotle.models.DataElement,related_name="dssInclusions")
-    class Meta:
+    class Meta(DSSInclusion.Meta):
         verbose_name = "DSS Data Element Inclusion"
 
     @property
@@ -111,6 +142,8 @@ class DSSClusterInclusion(DSSInclusion):
     The child in this relationship is considered to be a child of the parent DSS as specified by the `dss` property.
     """
     child = models.ForeignKey(DataSetSpecification,related_name='parent_dss')
+    class Meta(DSSInclusion.Meta):
+        verbose_name = "DSS Cluster Inclusion"
     
     @property
     def include(self):

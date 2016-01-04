@@ -27,6 +27,8 @@
                             Clusters
                         {% endif %}
                     </th>
+                    <th>Statuses
+                    </th>
                     <th>
                         <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-placement="left" data-html="true"
                             title="Data Element Inclusion" data-content="The rules for inclusion for a data element within a data set.<br>May be optional, mandatory or conditional">
@@ -50,7 +52,7 @@
             <tbody>
                 {% if item.dssdeinclusion_set.exists and item.dssclusterinclusion_set.exists %}
                 <tr>
-                    <th colspan=4>Clusters
+                    <th colspan=5>Clusters
                     {% if item|can_edit:request.user %}
                         <div class="btn-group pull-right" role="group" aria-label="Cluster actions">
                         <a href="{% url 'aristotle_dse:addClustersToDSS' dss_id=item.id %}"
@@ -59,7 +61,7 @@
                             <i class="fa fa-plus"></i>
                             Add a cluster to this data set specification
                         </a>
-                        <a href="{#% url 'aristotle_dse:reorderDEInclusion' dss_id=item.id %#}"
+                        <a href="{% url 'aristotle_dse:editInclusionOrder' dss_id=item.id inc_type='cluster' %}"
                             data-toggle="modal" data-target="#addDEtoDSS"
                             class="btn btn-default btn-sm">
                             <i class="fa fa-refresh fa-rotate-90"></i>
@@ -84,6 +86,14 @@
                         </div>
                         {% endif %}
                     </td>
+                    <td><ul>
+                        {% for s in item.current_statuses %}
+                            <li>[{{ s.registrationAuthority }}: {{ s.state_name }}]</li>
+                        {% empty %}
+                        <li><em>Unregistered</em></li>
+                        {% endfor %}
+                        </ul>
+                    </td>
                     <td>{{ deinc.cardinality }}</td>
                     <td>{{ deinc.maximum_occurances }}</td>
                     {% if item|can_edit:request.user %}
@@ -107,7 +117,7 @@
             <tbody>
                 {% if item.dssdeinclusion_set.exists and item.dssclusterinclusion_set.exists %}
                 <tr>
-                    <th colspan=4>Data Elements
+                    <th colspan=5>Data Elements
                     {% if item|can_edit:request.user %}
                         <div class="btn-group pull-right" role="group" aria-label="Dala element actions">
                         <a href="{% url 'aristotle_dse:addDataElementsToDSS' dss_id=item.id %}"
@@ -116,7 +126,7 @@
                             <i class="fa fa-plus"></i>
                             Add a data element to this data set specification
                         </a>
-                        <a href="{#% url 'aristotle_dse:reorderDEInclusion' dss_id=item.id %#}"
+                        <a href="{% url 'aristotle_dse:editInclusionOrder' dss_id=item.id inc_type='data_element' %}"
                             data-toggle="modal" data-target="#reorderPane"
                             class="btn btn-default btn-sm">
                             <i class="fa fa-refresh fa-rotate-90"></i>
@@ -129,7 +139,7 @@
             {% endif %}
             {% for deinc in item.dssdeinclusion_set.all %}
                 <tr>
-                    <td><i class="fa fa-fw fa-"></i>{% include "aristotle_mdr/helpers/itemLink.html" with item=deinc.data_element %}
+                    <td>{{ deinc.order }}<i class="fa fa-fw fa-"></i>{% include "aristotle_mdr/helpers/itemLink.html" with item=deinc.data_element %}
                         {% if deinc.specific_information %}
                         <div>
                             {{ deinc.specific_information | safe }}
@@ -137,9 +147,17 @@
                         {% endif %}
                         {% if deinc.conditional_obligation %}
                         <div>
-                            <strong>Conditional Obligation:</strong>{{ deinc.conditionalObligation }}
+                            <strong>Conditional Obligation:</strong>{{ deinc.conditional_obligation }}
                         </div>
                         {% endif %}
+                    </td>
+                    <td><ul>
+                        {% for s in item.current_statuses %}
+                            <li>[{{ s.registrationAuthority }}: {{ s.state_name }}]</li>
+                        {% empty %}
+                        <li><em>Unregistered</em></li>
+                        {% endfor %}
+                        </ul>
                     </td>
                     <td>{{ deinc.cardinality }}</td>
                     <td>{{ deinc.maximum_occurances }}</td>
