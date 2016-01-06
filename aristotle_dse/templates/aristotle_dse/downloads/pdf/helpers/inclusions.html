@@ -1,0 +1,31 @@
+{% load aristotle_tags %}
+<table>
+    <thead>
+        <tr>
+            <th style="width:2cm;vertical-align:top;"></th>
+            <th>Name</th>
+            <th style="width:5cm;">Cardinality</th>
+            <th style="width:1cm;">#</th>
+        </tr>
+    </thead>
+    {% if item.dssclusterinclusion_set.exists %}
+    <tbody>
+        <tr>
+            <th colspan='3'>Clusters</th>
+        </tr>
+    {% for dssinc in item.dssclusterinclusion_set.all %}
+        {% include "aristotle_dse/downloads/pdf/helpers/inclusion_row.html" with inc=dssinc %}
+    {% endfor %}
+    </tbody>
+    {% endif %}
+    {% if item.dssdeinclusion_set.exists %}
+    <tbody>
+        <tr>
+            <th colspan='3'>Data Elements</th>
+        </tr>
+    {% for deinc in item.dssdeinclusion_set.all %}
+        {% include "aristotle_dse/downloads/pdf/helpers/inclusion_row.html" with inc=deinc %}
+    {% endfor %}
+    </tbody>
+    {% endif %}
+</table>

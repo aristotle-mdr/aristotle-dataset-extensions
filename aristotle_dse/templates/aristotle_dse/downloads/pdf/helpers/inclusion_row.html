@@ -1,0 +1,19 @@
+<tr>
+    <td>{{ inc.order }}</td>
+    <td>{% include "aristotle_mdr/helpers/itemLink.html" with item=inc.include %}
+        <div style="font-size:90%;padding-left:1cm;">
+            {% if inc.specific_information %}
+            <p class="included_html">
+                {{ inc.specific_information | safe }}
+            </p>
+            {% endif %}
+            {% if inc.conditional_obligation %}
+            <p>
+                <strong>Conditional Obligation:</strong> {{ inc.conditional_obligation }}
+            </p>
+        </div>
+        {% endif %}
+    </td>
+    <td style="text-align:center;">{{ inc.cardinality }}</td>
+    <td>{{ inc.maximum_occurances }}</td>
+</tr>

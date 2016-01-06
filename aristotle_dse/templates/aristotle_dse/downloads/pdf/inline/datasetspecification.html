@@ -1,0 +1,17 @@
+{% extends "aristotle_mdr/downloads/pdf/inline/managedContent.html" %}
+{% load aristotle_tags %}
+
+{% block objSpecific %}
+    <div style="page-break-after:always;">
+    <h3>Metadata items in this Data Set Specification</h3>
+    {% if item.data_elements.all %}
+        <p> Below is a list of all the components within this Dataset Specification.
+            <br> Each entry includes the item name, whether the item is <em>optional, mandatory or conditional</em> and the maximum times the item can occur in a dataset.
+            <br> If the items must occur in a particular order in the dataset, the sequence number is included before the item name.
+        </p>
+        <ul>
+        <small><strong>Note:</strong> The final column below is the maximum number of times the data element may be repeated </small>
+        {% include "aristotle_dse/downloads/pdf/helpers/inclusions.html" with item=item %}
+    {% endif %}
+    </div>
+{% endblock %}
