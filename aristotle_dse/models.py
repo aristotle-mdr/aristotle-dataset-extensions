@@ -25,6 +25,11 @@ class DataSource(aristotle.models.concept):
 
 CARDINALITY = Choices(('optional', _('Optional')),('conditional', _('Conditional')), ('mandatory', _('Mandatory')))
 class DataSetSpecification(aristotle.models.concept):
+    """
+    A collection of :model:`aristotle_mdr.DataElement`\s
+    specifying the order and fields required for a standardised
+    :model:`aristotle_dse.DataSource`.
+    """
     edit_page_excludes = ['clusters','data_elements']
     template = "aristotle_dse/concepts/dataSetSpecification.html"
     ordered = models.BooleanField(
@@ -80,17 +85,16 @@ class DataSetSpecification(aristotle.models.concept):
     def registryCascadeItems(self):
         return list(self.clusters.all())+list(self.data_elements.all())
 
-    @property
     def get_download_items(self):
         des = self.data_elements.all()
         from collections import OrderedDict
-        return OrderedDict([
+        return [
             (DataSetSpecification,self.clusters.all().order_by('name')),
             (aristotle.models.DataElement,des.order_by('name')),
             (aristotle.models.ObjectClass,aristotle.models.ObjectClass.objects.filter(dataelementconcept__dataelement__datasetspecification=self).order_by('name')),
             (aristotle.models.Property,aristotle.models.Property.objects.filter(dataelementconcept__dataelement__datasetspecification=self).order_by('name')),
             (aristotle.models.ValueDomain,aristotle.models.ValueDomain.objects.filter(dataelement__datasetspecification=self).order_by('name')),
-        ])
+        ]
 
 class DSSInclusion(aristotle.models.aristotleComponent):
     class Meta:

@@ -15,16 +15,4 @@
         {% include "aristotle_dse/downloads/pdf/helpers/inclusions.html" with item=item %}
     {% endif %}
     </div>
-    {% for type,subitemset in subitems.items %}
-    <div style="page-break-after:always;">
-        <h1>{{type.get_verbose_name}}</h1>
-        <p>{% doc type %}</p>
-        {% for i in subitemset %} 
-            <div id='{{i.id}}'>
-                {#% include "aristotle_mdr/downloads/pdf/inline/managedContent.html" with item=i %#}
-                {% include i|template_path:'pdf,inline' with item=i only %}
-            </div>
-        {% endfor %}
-    </div>
-    {% endfor %}
 {% endblock %}
