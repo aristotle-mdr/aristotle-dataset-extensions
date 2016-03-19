@@ -87,7 +87,6 @@ class DataSetSpecification(aristotle.models.concept):
 
     def get_download_items(self):
         des = self.data_elements.all()
-        from collections import OrderedDict
         return [
             (DataSetSpecification,self.clusters.all().order_by('name')),
             (aristotle.models.DataElement,des.order_by('name')),

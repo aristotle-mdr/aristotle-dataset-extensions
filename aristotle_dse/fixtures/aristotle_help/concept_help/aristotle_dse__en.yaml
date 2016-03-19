@@ -7,7 +7,7 @@
     offical_definition: 
     official_reference: 
     official_link:
-    long_help: >
+    body: >
         <p>A data set specification (DSS) is characterised by a selection of
         [[aristotle_mdr.data element|s]] which address the requirements within 
         the scope statement. The selected data elements must be collected according
@@ -26,5 +26,5 @@
     offical_definition:
     official_reference:
     official_link:
-    long_help: >
+    body: >
         rubharb
