@@ -11,6 +11,10 @@ setup_test_environment()
 
 from aristotle_dse import models
 
+def setUpModule():
+    from django.core.management import call_command
+    call_command('loadhelp', 'aristotle_help/concept_help/*', verbosity=0, interactive=False)
+
 class LoggedInViewDSSConceptPages(LoggedInViewConceptPages):
     def get_help_page(self):
         return reverse('aristotle_dse:about',args=[self.item1._meta.model_name])
