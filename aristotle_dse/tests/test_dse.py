@@ -3,13 +3,17 @@ from django.test import TestCase
 import aristotle_mdr.models as MDR
 from django.core.urlresolvers import reverse
 from aristotle_mdr.tests.utils import ManagedObjectVisibility
-from aristotle_mdr.tests.test_html_pages import LoggedInViewConceptPages
-from aristotle_mdr.tests.test_admin_pages import AdminPageForConcept
+from aristotle_mdr.tests.main.test_html_pages import LoggedInViewConceptPages
+from aristotle_mdr.tests.main.test_admin_pages import AdminPageForConcept
 
 from django.test.utils import setup_test_environment
 setup_test_environment()
 
 from aristotle_dse import models
+
+def setUpModule():
+    from django.core.management import call_command
+    call_command('loadhelp', 'aristotle_help/concept_help/*', verbosity=0, interactive=False)
 
 class LoggedInViewDSSConceptPages(LoggedInViewConceptPages):
     def get_help_page(self):
@@ -25,9 +29,12 @@ class DataSetSpecificationVisibility(ManagedObjectVisibility,TestCase):
 class DataSetSpecificationAdmin(AdminPageForConcept,TestCase):
     itemType=models.DataSetSpecification
     form_defaults={
-        'dataElements-TOTAL_FORMS':0,
-        'dataElements-INITIAL_FORMS':0,
-        'dataElements-MAX_NUM_FORMS':1,
+        'dssdeinclusion_set-TOTAL_FORMS':0,
+        'dssdeinclusion_set-INITIAL_FORMS':0,
+        'dsscdeinclusion_set-MAX_NUM_FORMS':1,
+        'dssclusterinclusion_set-TOTAL_FORMS':0,
+        'dssclusterinclusion_set-INITIAL_FORMS':0,
+        'dssclusterinclusion_set-MAX_NUM_FORMS':1,
         }
 
 class DataSetSpecificationViewPage(LoggedInViewDSSConceptPages,TestCase):
@@ -44,6 +51,6 @@ class DataSetSpecificationViewPage(LoggedInViewDSSConceptPages,TestCase):
             workgroup=self.wg1,definition="The sex of the person with a code.",
             )
         self.item1.addDataElement(de)
-        self.assertTrue(self.item1.dataElements.count(),1)
+        self.assertTrue(self.item1.data_elements.count(),1)
 
 

@@ -29,7 +29,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     install_requires = [
-        'aristotle-metadata-registry'
+        'aristotle-metadata-registry>=1.2.4'
     ]
 
 )

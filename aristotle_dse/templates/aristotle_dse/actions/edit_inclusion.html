@@ -1,0 +1,68 @@
+{% extends request.is_ajax|yesno:"aristotle_mdr/base_ajax.html,aristotle_mdr/base.html" %}
+{% load aristotle_tags compile_static i18n %}
+
+{% block title %}{{ item.dss.name }} - Modifying inclusion of {{ item.include.name }}{% endblock %}
+{% block content %}
+    {% block extra_head_scripts %}
+        <style>
+        .form-group input, .form-group textarea, .form-group .django-ckeditor-widget {
+          width:100%;
+        }
+        </style>
+        {% if request.is_ajax %}
+            {{ form.media }}
+        {% endif %}
+    {% endblock %}
+
+<form method="post" action="{{request.get_full_path}}" >
+    <div class="modal-body">
+        <ol class="breadcrumb">
+          <li><a href="{% url 'aristotle:item' item.dss.id %}">{{ item.dss.name }}</a></li>
+          <li class="active">Modifying inclusion of 
+          <a href="{% url 'aristotle:item' item.include.id %}">{{ item.include.name }}</a>
+          </li>
+        </ol>
+
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            {{form.errors}}
+        </div>
+        {% endif %}
+
+    {% csrf_token %}
+    <div class="well">
+      {% for field in form %}
+      <div class="form-group">
+        <div>
+          <label class="" for="{field.name}}">
+            {{field.label}}
+            {% if field.field.required %}
+            <span class="sr-only">required</span>
+            <span class="">*</span>
+            {% endif %}
+          </label>
+          {% if field.help_text %}
+            <span class="help-block">{{ field.help_text }}</span>
+          {% endif %}
+        </div>
+        {{field}}
+        {{field.errors}}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="modal-footer">
+        {% if request.is_ajax %}
+            <button type="button" class="btn btn-default" data-dismiss="modal">
+                <i class="fa fa-times"></i>Cancel</button>
+        {% else %}
+            <a class="btn btn-default" href="{% url 'aristotle:item' item.id %}">
+                <i class="fa fa-times"></i>
+                Cancel</a>
+        {% endif %}
+        <button type="submit" class="btn btn-primary" value="Save" accesskey='s'>
+            <i class="fa fa-save"></i> Save
+        </button>
+    </div>
+</form>
+{% endblock %}

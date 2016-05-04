@@ -1,10 +1,9 @@
-{% extends "aristotle_mdr/downloads/pdf/managedContent.html" %}
+{% extends "aristotle_mdr/downloads/pdf/inline/managedContent.html" %}
 {% load aristotle_tags %}
 
-{% block title %}{{ item.name }} ({{item.status}}){% endblock %}
 {% block objSpecific %}
     <div style="page-break-after:always;">
-    <h2>Metadata items in this Data Set Specification</h2>
+    <h3>Metadata items in this Data Set Specification</h3>
     {% if item.data_elements.all %}
         <p> Below is a list of all the components within this Dataset Specification.
             <br> Each entry includes the item name, whether the item is <em>optional, mandatory or conditional</em> and the maximum times the item can occur in a dataset.

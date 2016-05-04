@@ -1,6 +1,6 @@
 {% extends "aristotle_mdr/concepts/managedContent.html" %}
 
-{% load aristotle_tags %}
+{% load aristotle_tags i18n %}
 
 {% block objSpecific %}
 <h2>Metadata items in this Data Set Specification</h2>
@@ -8,33 +8,27 @@
         <br> Each entry includes the item name, whether the item is <em>optional, mandatory or conditional</em> and the maximum times the item can occur in a dataset.
         <br> If the items must occur in a particular order in the dataset, the sequence number is included before the item name.
     </p>
-    {% if item|can_edit:request.user %}
-        <a href="{% url 'aristotle_dse:addDataElementsToDSS' dss_id=item.id %}"
-            data-toggle="modal" data-target="#addDEtoDSS"
-            class="btn btn-primary">
-            <i class="fa fa-plus"></i>
-            Add a data element to this data set specification
-        </a>
-        <div id="addDEtoDSS" class="modal fade">
-          <div class="modal-dialog">
-              <div class="modal-content">
-              </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
-
-    {% endif %}
     <script>
         $(function () {
           $('[data-toggle="popover"]').popover()
         })
     </script>
 
-    {% if item.dataElements.all %}
+    {% if item.dssdeinclusion_set.exists or item.dssclusterinclusion_set.exists %}
         <table class="dssInclusions table table-striped table-condensed">
             <thead>
                 <tr>
-                    <th></th>
-                    <th>Data Element</th>
+                    <th>
+                        {% if item.dssdeinclusion_set.exists and item.dssclusterinclusion_set.exists %}
+                            Components
+                        {% elif item.dssdeinclusion_set.exists %}
+                            Data Elements
+                        {% else %}
+                            Clusters
+                        {% endif %}
+                    </th>
+                    <th>Statuses
+                    </th>
                     <th>
                         <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-placement="left" data-html="true"
                             title="Data Element Inclusion" data-content="The rules for inclusion for a data element within a data set.<br>May be optional, mandatory or conditional">
@@ -45,50 +39,199 @@
                             title="Maximum Occurances" data-content="The maximum number of times a data element may be repeated in a data set.">
                             #</a>
                     </th>
-                    {% if item|can_edit:request.user %}<th title="Use the links in this column to remove data elements from this Dataset specification"><i class="fa fa-trash-o"></i></th>{% endif %}
+                    {% if item|can_edit:request.user %}
+                    <th title="Use the links in this column to edit or remove data elements from this Dataset specification">
+                        <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" data-placement="left"
+                            title="Edit or delete" data-content="Use the links in this column to edit or remove data elements from this Dataset specification.">
+                            Edit</a>
+                    </th>
+                    {% endif %}
                 </tr>
             </thead>
+            {% if item.dssclusterinclusion_set.exists %}
             <tbody>
-            {% for deinc in item.dataElements.all %}
+                {% if item.dssdeinclusion_set.exists and item.dssclusterinclusion_set.exists %}
                 <tr>
-                    <td></td>
-                    <td>{% include "aristotle_mdr/helpers/itemLink.html" with item=deinc.dataElement %}
-                        {% if deinc.specificInformation %}
+                    <th colspan=5>Clusters
+                    {% if item|can_edit:request.user %}
+                        <div class="btn-group pull-right" role="group" aria-label="Cluster actions">
+                        <a href="{% url 'aristotle_dse:addClustersToDSS' dss_id=item.id %}"
+                            data-toggle="modal" data-target="#addClusterstoDSS"
+                            class="btn btn-default btn-sm">
+                            <i class="fa fa-plus"></i>
+                            Add a cluster to this data set specification
+                        </a>
+                        <a href="{% url 'aristotle_dse:editInclusionOrder' dss_id=item.id inc_type='cluster' %}"
+                            data-toggle="modal" data-target="#addDEtoDSS"
+                            class="btn btn-default btn-sm">
+                            <i class="fa fa-refresh fa-rotate-90"></i>
+                            Reorder
+                        </a>
+                        </div>
+                    {% endif %}
+                    </th>
+                </tr>
+                {% endif %}
+            {% for deinc in item.dssclusterinclusion_set.all %}
+                <tr>
+                    <td><i class="fa fa-fw fa-folder-o"></i>{% include "aristotle_mdr/helpers/itemLink.html" with item=deinc.child %}
+                        {% if deinc.specific_information %}
                         <div>
-                            {{ deinc.specificInformation | safe }}
+                            {{ deinc.specific_information | safe }}
                         </div>
                         {% endif %}
-                        {% if deinc.conditionalObligation %}
+                        {% if deinc.conditional_obligation %}
                         <div>
                             <strong>Conditional Obligation:</strong>{{ deinc.conditionalObligation }}
                         </div>
                         {% endif %}
                     </td>
+                    <td><ul>
+                        {% for s in item.current_statuses %}
+                            <li>[{{ s.registrationAuthority }}: {{ s.state_name }}]</li>
+                        {% empty %}
+                        <li><em>Unregistered</em></li>
+                        {% endfor %}
+                        </ul>
+                    </td>
                     <td>{{ deinc.cardinality }}</td>
-                    <td>{{ deinc.maximumOccurances }}</td>
+                    <td>{{ deinc.maximum_occurances }}</td>
                     {% if item|can_edit:request.user %}
                     <td>
-                        <a href="{% url 'aristotle_dse:removeDataElementFromDSS' deinc.dataElement.id item.id %}"
+                        <a href="{% url 'aristotle_dse:editDSSInclusion' item.id deinc.child.id %}"
+                        data-toggle="modal" data-target="#reorderPane"
+                        class="close" title="Edit inclusion in this Dataset specification">
+                            <i class="fa fa-fw fa-pencil"></i>
+                        </a>
+                        <a href="{% url 'aristotle_dse:removeClusterFromDSS' deinc.child.id item.id %}"
                         class="close" title="Remove from Dataset specification">
-                            <i class="fa fa-times"></i>
+                            <i class="fa fa-fw fa-times"></i>
                         </a>
                     </td>
                     {% endif %}
                 </tr>
             {% endfor %}
             </tbody>
+            {% endif %}
+            {% if item.dssdeinclusion_set.exists %}
+            <tbody>
+                {% if item.dssdeinclusion_set.exists and item.dssclusterinclusion_set.exists %}
+                <tr>
+                    <th colspan=5>Data Elements
+                    {% if item|can_edit:request.user %}
+                        <div class="btn-group pull-right" role="group" aria-label="Dala element actions">
+                        <a href="{% url 'aristotle_dse:addDataElementsToDSS' dss_id=item.id %}"
+                            data-toggle="modal" data-target="#addDEtoDSS"
+                            class="btn btn-default btn-sm">
+                            <i class="fa fa-plus"></i>
+                            Add a data element to this data set specification
+                        </a>
+                        <a href="{% url 'aristotle_dse:editInclusionOrder' dss_id=item.id inc_type='data_element' %}"
+                            data-toggle="modal" data-target="#reorderPane"
+                            class="btn btn-default btn-sm">
+                            <i class="fa fa-refresh fa-rotate-90"></i>
+                            Reorder
+                        </a>
+                        </div>
+                    {% endif %}
+                    </th>
+                </tr>
+            {% endif %}
+            {% for deinc in item.dssdeinclusion_set.all %}
+                <tr>
+                    <td>{{ deinc.order }}<i class="fa fa-fw fa-"></i>{% include "aristotle_mdr/helpers/itemLink.html" with item=deinc.data_element %}
+                        {% if deinc.specific_information %}
+                        <div>
+                            {{ deinc.specific_information | safe }}
+                        </div>
+                        {% endif %}
+                        {% if deinc.conditional_obligation %}
+                        <div>
+                            <strong>Conditional Obligation:</strong>{{ deinc.conditional_obligation }}
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td><ul>
+                        {% for s in item.current_statuses %}
+                            <li>[{{ s.registrationAuthority }}: {{ s.state_name }}]</li>
+                        {% empty %}
+                        <li><em>Unregistered</em></li>
+                        {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{ deinc.cardinality }}</td>
+                    <td>{{ deinc.maximum_occurances }}</td>
+                    {% if item|can_edit:request.user %}
+                    <td>
+                        <a href="{% url 'aristotle_dse:editDEInclusion' item.id deinc.data_element.id %}"
+                        data-toggle="modal" data-target="#reorderPane"
+                        class="close" title="Edit inclusion in this Dataset specification">
+                            <i class="fa fa-fw fa-pencil"></i>
+                        </a>
+                        <a href="{% url 'aristotle_dse:removeDataElementFromDSS' deinc.data_element.id item.id %}"
+                        class="close" title="Remove from Dataset specification">
+                            <i class="fa fa-fw fa-times"></i>
+                        </a>
+                    </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+            {% endif %}
             <tfoot>
                 <tr>
                     <th></th>
                     <th>Data Element</th>
                     <th>Inclusion</th>
                     <th title="Maximum Occurances">#</th>
-                    {% if item|can_edit:request.user %}<th><i class="fa fa-trash-o"></i></th>{% endif %}
+                    {% if item|can_edit:request.user %}
+                    <th>
+                        Edit
+                    </th>
+                    {% endif %}
                 </tr>
             </tfoot>
         </table>
     {% else %}
-    <div class="well well-lg">No data elements have been assigned to this data set specification.</div>
+        <div class="well well-lg">No data elements have been assigned to this data set specification.</div>
+        {% if item|can_edit:request.user %}
+        <div class="btn-group pull-right" role="group" aria-label="Dataset actions">
+            <a href="{% url 'aristotle_dse:addDataElementsToDSS' dss_id=item.id %}"
+                data-toggle="modal" data-target="#addDEtoDSS"
+                class="btn btn-primary">
+                <i class="fa fa-plus"></i>
+                Add a data element to this data set specification
+            </a>
+            <a href="{% url 'aristotle_dse:addClustersToDSS' dss_id=item.id %}"
+                data-toggle="modal" data-target="#addClusterstoDSS"
+                class="btn btn-primary">
+                <i class="fa fa-plus"></i>
+                Add a cluster to this data set specification
+            </a>
+        </div>
+        {% endif %}
     {% endif %}
 
+    {% if item|can_edit:request.user %}
+        {% bootstrap_modal 'addDEtoDSS' %}
+        {% bootstrap_modal 'addClusterstoDSS' %}
+        {% bootstrap_modal 'reorderPane' size='lg' %}
+    {% endif %}
+
+{% endblock %}
+
+{% block relationships %}
+{% if item.parent_dss.exists %}
+    <h3>Contained in the following datasets</h3>
+    <ul>
+        {% for parent in item.parent_dss.all %}
+            {% if parent.dss|can_view:user %}
+                <li>
+                    {% include "aristotle_mdr/helpers/inlineDetails.html" with item=parent.dss %}
+                     ({{ parent.cardinality }})
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% endif %}
 {% endblock %}
