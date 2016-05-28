@@ -53,4 +53,18 @@ class DataSetSpecificationViewPage(LoggedInViewDSSConceptPages,TestCase):
         self.item1.addDataElement(de)
         self.assertTrue(self.item1.data_elements.count(),1)
 
+    def test_cascade_action(self):
+        self.logout()
+        check_url = reverse('aristotle:check_cascaded_states', args=[self.item1.pk])
+        response = self.client.get(self.get_page(self.item1))
+        self.assertEqual(response.status_code,302)
+        self.assertTrue(check_url not in response.content)
+        
+        response = self.client.get(check_url)
+        self.assertTrue(response.status_code,403)
+
+        self.login_editor()
+        response = self.client.get(self.get_page(self.item1))
+        self.assertEqual(response.status_code,200)
+        self.assertTrue(check_url in response.content)
 
