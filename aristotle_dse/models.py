@@ -45,11 +45,15 @@ class DataSetSpecification(aristotle.models.concept):
             )
     data_elements = models.ManyToManyField(
             aristotle.models.DataElement,
+            blank=True,
+            null=True,
             through='DSSDEInclusion'
             )
     clusters = models.ManyToManyField(
             'self',
             through='DSSClusterInclusion',
+            blank=True,
+            null=True,
             symmetrical=False
             )
     collection_method = aristotle.models.RichTextField(
@@ -82,7 +86,7 @@ class DataSetSpecification(aristotle.models.concept):
             )
 
     @property
-    def registryCascadeItems(self):
+    def registry_cascade_items(self):
         return list(self.clusters.all())+list(self.data_elements.all())
 
     def get_download_items(self):

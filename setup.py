@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='django-aristotle-dataset-extensions',
-    version='0.1',
+    version='0.2',
     packages=['aristotle_dse'],
     include_package_data=True,
     license='BSD Licence',
@@ -29,7 +29,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     install_requires = [
-        'aristotle-metadata-registry>=1.2.4'
+        'aristotle-metadata-registry>=1.3.0'
     ]
 
 )

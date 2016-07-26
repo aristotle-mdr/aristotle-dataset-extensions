@@ -13,7 +13,7 @@ from aristotle_dse import models
 
 def setUpModule():
     from django.core.management import call_command
-    call_command('loadhelp', 'aristotle_help/concept_help/*', verbosity=0, interactive=False)
+    call_command('load_aristotle_help', verbosity=0, interactive=False)
 
 class LoggedInViewDSSConceptPages(LoggedInViewConceptPages):
     def get_help_page(self):
@@ -66,5 +66,16 @@ class DataSetSpecificationViewPage(LoggedInViewDSSConceptPages,TestCase):
         self.login_editor()
         response = self.client.get(self.get_page(self.item1))
         self.assertEqual(response.status_code,200)
-        self.assertTrue(check_url in response.content)
+        self.assertTrue(check_url not in response.content) # no child items, nothing to review
 
+        response = self.client.get(check_url)
+        self.assertTrue(response.status_code,403)
+
+        self.test_add_data_element() # add a data element
+        
+        response = self.client.get(self.get_page(self.item1))
+        self.assertEqual(response.status_code,200)
+        self.assertTrue(check_url in response.content) # now there are child items, we can review
+
+        response = self.client.get(check_url)
+        self.assertTrue(response.status_code,200)
