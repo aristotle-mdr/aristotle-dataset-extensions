@@ -7,22 +7,15 @@ from model_utils import Choices
 import aristotle_mdr as aristotle
 from aristotle_mdr.models import RichTextField
 
-FREQUENCY = Choices( ('annually', _('Annually')),
-        ('biannually', _('Biannually')),
-        ('quarterly', _('Quarterly')),
-        ('monthly', _('Monthly')),
-        ('adhoc', _('Ad hoc')),
-        ('notStated', _('Not stated')),
-    )
-
 class DataSource(aristotle.models.concept):
     template = "aristotle_dse/concepts/dataSource.html"
     #qualityStatement = models.ForeignKey(QualityStatement,blank=True,null=True)
     linkToData = models.URLField(blank=True)
     custodian = models.TextField(max_length=256,blank=True)
-    frequency = models.CharField(choices=FREQUENCY,default=FREQUENCY.notStated,max_length=20)
+    frequency = models.CharField(max_length=512, blank=True, null=True)
     specification = models.ForeignKey(
             'DataSetSpecification',
+            help_text=_('The dataset specification to which this data source conforms'),
             blank=True,
             null=True,
             )

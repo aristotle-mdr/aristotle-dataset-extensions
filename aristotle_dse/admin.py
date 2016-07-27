@@ -41,5 +41,5 @@ register_concept(aristotle_dse.models.DataSetSpecification,
 register_concept(aristotle_dse.models.DataSource,
     extra_fieldsets=[
             ('Data Source',
-                {'fields': ['linkToData','custodian','frequency',]}),
+                {'fields': ['linkToData','custodian','frequency', 'specification']}),
     ])
