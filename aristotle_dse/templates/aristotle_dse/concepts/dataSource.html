@@ -21,10 +21,12 @@ For more details on how to access this data contact the data custodian listed be
 <h2>Data source details</h2>
 <dl class="">
     <dt>Dataset specification</dt>
-    <dd>{% if item.specification|can_view:request.user %}
-            {% include "aristotle_mdr/helpers/inlineDetails.html" with item=item.specification %}
-        {% elif item.specification %}
-            {% trans "Specification not available at this time" %}
+    <dd>{% if item.specification %}
+            {% if item.specification|can_view:request.user %}
+                {% include "aristotle_mdr/helpers/inlineDetails.html" with item=item.specification %}
+            {% else %}
+                {% trans "Specification not available at this time" %}
+            {% endif %}
         {% else %}
             {% trans "No specification stated" %}
         {% endif %}
