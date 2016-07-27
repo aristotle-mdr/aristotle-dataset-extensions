@@ -13,11 +13,7 @@ from aristotle_dse import models
 
 def setUpModule():
     from django.core.management import call_command
-    call_command('loadhelp', 'aristotle_help/concept_help/*', verbosity=0, interactive=False)
-
-class LoggedInViewDSSConceptPages(LoggedInViewConceptPages):
-    def get_help_page(self):
-        return reverse('aristotle_dse:about',args=[self.item1._meta.model_name])
+    call_command('load_aristotle_help', verbosity=0, interactive=False)
 
 class DataSetSpecificationVisibility(ManagedObjectVisibility,TestCase):
     def setUp(self):
@@ -37,15 +33,10 @@ class DataSetSpecificationAdmin(AdminPageForConcept,TestCase):
         'dssclusterinclusion_set-MAX_NUM_FORMS':1,
         }
 
-class DataSetSpecificationViewPage(LoggedInViewDSSConceptPages,TestCase):
+class DataSetSpecificationViewPage(LoggedInViewConceptPages,TestCase):
     url_name='datasetspecification'
     itemType=models.DataSetSpecification
-    def get_help_page(self):
-        return reverse('aristotle_dse:about',args=[self.item1._meta.model_name])
-    def test_help_page_exists(self):
-        self.logout()
-        response = self.client.get(self.get_help_page())
-        self.assertEqual(response.status_code,200)
+
     def test_add_data_element(self):
         de,created = MDR.DataElement.objects.get_or_create(name="Person-sex, Code N",
             workgroup=self.wg1,definition="The sex of the person with a code.",
@@ -53,4 +44,43 @@ class DataSetSpecificationViewPage(LoggedInViewDSSConceptPages,TestCase):
         self.item1.addDataElement(de)
         self.assertTrue(self.item1.data_elements.count(),1)
 
+    def test_cascade_action(self):
+        self.logout()
+        check_url = reverse('aristotle:check_cascaded_states', args=[self.item1.pk])
+        response = self.client.get(self.get_page(self.item1))
+        self.assertEqual(response.status_code,302)
+        self.assertTrue(check_url not in response.content)
+        
+        response = self.client.get(check_url)
+        self.assertTrue(response.status_code,403)
 
+        self.login_editor()
+        response = self.client.get(self.get_page(self.item1))
+        self.assertEqual(response.status_code,200)
+        self.assertTrue(check_url not in response.content) # no child items, nothing to review
+
+        response = self.client.get(check_url)
+        self.assertTrue(response.status_code,403)
+
+        self.test_add_data_element() # add a data element
+        
+        response = self.client.get(self.get_page(self.item1))
+        self.assertEqual(response.status_code,200)
+        self.assertTrue(check_url in response.content) # now there are child items, we can review
+
+        response = self.client.get(check_url)
+        self.assertTrue(response.status_code,200)
+
+class DataSourceVisibility(ManagedObjectVisibility,TestCase):
+    def setUp(self):
+        super(DataSourceVisibility, self).setUp()
+        self.item = models.DataSource.objects.create(name="Test DataSource",
+            workgroup=self.wg,
+            )
+
+class DataSourceAdmin(AdminPageForConcept,TestCase):
+    itemType=models.DataSource
+
+class DataSourceViewPage(LoggedInViewConceptPages,TestCase):
+    url_name='datasource'
+    itemType=models.DataSource

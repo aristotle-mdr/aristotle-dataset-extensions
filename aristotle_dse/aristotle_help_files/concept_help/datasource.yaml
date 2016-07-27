@@ -1,0 +1,16 @@
+- model: aristotle_mdr_help.concepthelp
+  fields: 
+    app_label: aristotle_dse
+    concept_type: datasource
+    language: en
+    brief: A reference to a collection data that conforms to a [[datasetspecification]].
+    offical_definition:
+    official_reference:
+    official_link:
+    body: >
+        Data sources are records of data collections that meet the requirements of a 
+        given [[datasetspecification]].
+        
+        While data is not available within the metadata registry, Data Sources provide a link
+        from the structural metadata that describes the data to the databases and data warehouses 
+        that store the data.

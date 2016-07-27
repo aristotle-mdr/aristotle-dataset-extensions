@@ -7,20 +7,18 @@ from model_utils import Choices
 import aristotle_mdr as aristotle
 from aristotle_mdr.models import RichTextField
 
-FREQUENCY = Choices( ('annually', _('Annually')),
-        ('biannually', _('Biannually')),
-        ('quarterly', _('Quarterly')),
-        ('monthly', _('Monthly')),
-        ('adhoc', _('Ad hoc')),
-        ('notStated', _('Not stated')),
-    )
-
 class DataSource(aristotle.models.concept):
     template = "aristotle_dse/concepts/dataSource.html"
     #qualityStatement = models.ForeignKey(QualityStatement,blank=True,null=True)
     linkToData = models.URLField(blank=True)
     custodian = models.TextField(max_length=256,blank=True)
-    frequency = models.CharField(choices=FREQUENCY,default=FREQUENCY.notStated,max_length=20)
+    frequency = models.CharField(max_length=512, blank=True, null=True)
+    specification = models.ForeignKey(
+            'DataSetSpecification',
+            help_text=_('The dataset specification to which this data source conforms'),
+            blank=True,
+            null=True,
+            )
 
 
 CARDINALITY = Choices(('optional', _('Optional')),('conditional', _('Conditional')), ('mandatory', _('Mandatory')))
@@ -45,11 +43,15 @@ class DataSetSpecification(aristotle.models.concept):
             )
     data_elements = models.ManyToManyField(
             aristotle.models.DataElement,
+            blank=True,
+            null=True,
             through='DSSDEInclusion'
             )
     clusters = models.ManyToManyField(
             'self',
             through='DSSClusterInclusion',
+            blank=True,
+            null=True,
             symmetrical=False
             )
     collection_method = aristotle.models.RichTextField(
@@ -82,7 +84,7 @@ class DataSetSpecification(aristotle.models.concept):
             )
 
     @property
-    def registryCascadeItems(self):
+    def registry_cascade_items(self):
         return list(self.clusters.all())+list(self.data_elements.all())
 
     def get_download_items(self):
