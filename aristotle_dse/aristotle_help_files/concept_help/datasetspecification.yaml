@@ -8,7 +8,7 @@
     official_reference: 
     official_link:
     body: >
-        <p>A data set specification (DSS) is characterised by a selection of
+        <p>A data set specification (DSS) is a collection of
         [[aristotle_mdr.data element|s]] which address the requirements within 
         the scope statement. The selected data elements must be collected according
         to the specified guidelines, and may require the user to comply with
@@ -16,15 +16,4 @@
         of the same data element, and multiple responses allowed within a code set.</p> 
         
         <p>Data set specifications may also be associated with other item types 
-        such as glossary items or indicators.</p>   
-- model: aristotle_mdr_help.concepthelp
-  fields: 
-    app_label: aristotle_dse
-    concept_type: datasource
-    language: en
-    brief: A definition of a collected set of data that conforms to a [[datasetspecification]].
-    offical_definition:
-    official_reference:
-    official_link:
-    body: >
-        rubharb
+        such as glossary items or indicators.</p>

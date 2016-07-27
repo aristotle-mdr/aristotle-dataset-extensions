@@ -15,10 +15,6 @@ def setUpModule():
     from django.core.management import call_command
     call_command('load_aristotle_help', verbosity=0, interactive=False)
 
-class LoggedInViewDSSConceptPages(LoggedInViewConceptPages):
-    def get_help_page(self):
-        return reverse('aristotle_dse:about',args=[self.item1._meta.model_name])
-
 class DataSetSpecificationVisibility(ManagedObjectVisibility,TestCase):
     def setUp(self):
         super(DataSetSpecificationVisibility, self).setUp()
@@ -37,15 +33,10 @@ class DataSetSpecificationAdmin(AdminPageForConcept,TestCase):
         'dssclusterinclusion_set-MAX_NUM_FORMS':1,
         }
 
-class DataSetSpecificationViewPage(LoggedInViewDSSConceptPages,TestCase):
+class DataSetSpecificationViewPage(LoggedInViewConceptPages,TestCase):
     url_name='datasetspecification'
     itemType=models.DataSetSpecification
-    def get_help_page(self):
-        return reverse('aristotle_dse:about',args=[self.item1._meta.model_name])
-    def test_help_page_exists(self):
-        self.logout()
-        response = self.client.get(self.get_help_page())
-        self.assertEqual(response.status_code,200)
+
     def test_add_data_element(self):
         de,created = MDR.DataElement.objects.get_or_create(name="Person-sex, Code N",
             workgroup=self.wg1,definition="The sex of the person with a code.",
@@ -79,3 +70,17 @@ class DataSetSpecificationViewPage(LoggedInViewDSSConceptPages,TestCase):
 
         response = self.client.get(check_url)
         self.assertTrue(response.status_code,200)
+
+class DataSourceVisibility(ManagedObjectVisibility,TestCase):
+    def setUp(self):
+        super(DataSourceVisibility, self).setUp()
+        self.item = models.DataSource.objects.create(name="Test DataSource",
+            workgroup=self.wg,
+            )
+
+class DataSourceAdmin(AdminPageForConcept,TestCase):
+    itemType=models.DataSource
+
+class DataSourceViewPage(LoggedInViewConceptPages,TestCase):
+    url_name='datasource'
+    itemType=models.DataSource

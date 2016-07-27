@@ -21,6 +21,11 @@ class DataSource(aristotle.models.concept):
     linkToData = models.URLField(blank=True)
     custodian = models.TextField(max_length=256,blank=True)
     frequency = models.CharField(choices=FREQUENCY,default=FREQUENCY.notStated,max_length=20)
+    specification = models.ForeignKey(
+            'DataSetSpecification',
+            blank=True,
+            null=True,
+            )
 
 
 CARDINALITY = Choices(('optional', _('Optional')),('conditional', _('Conditional')), ('mandatory', _('Mandatory')))
