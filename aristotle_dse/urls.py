@@ -1,6 +1,3 @@
-import autocomplete_light
-autocomplete_light.autodiscover()
-
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 
