@@ -1,0 +1,8 @@
+table.dssInclusions tbody {
+    font-size:90%;
+}
+
+table.dssInclusions tr>*:nth-child(4),
+table.dssInclusions tr>*:nth-child(5) {
+    text-align:right;
+}
