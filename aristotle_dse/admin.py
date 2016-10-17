@@ -38,8 +38,33 @@ register_concept(aristotle_dse.models.DataSetSpecification,
         },
     )
 
-register_concept(aristotle_dse.models.DataSource,
+register_concept(aristotle_dse.models.DataCatalog,
     extra_fieldsets=[
             ('Data Source',
-                {'fields': ['linkToData','custodian','frequency', 'specification']}),
+                {'fields': ['issued','publisher', 'homepage', 'spatial', 'license']}),
+    ])
+
+register_concept(aristotle_dse.models.Dataset,
+    extra_fieldsets=[
+            ('Coverage',
+                {'fields': ['spatial', 'temporal']}),
+            ('Publishing',
+                {'fields': [
+                    'publisher', 'contact_point', 'landing_page',
+                    'dct_modified', 'issued', 'accrual_periodicity'
+                    ]}),
+    ])
+
+register_concept(aristotle_dse.models.Distribution,
+    extra_fieldsets=[
+            ('File details',
+                {'fields': [
+                    'access_URL', 'download_URL',
+                    'byte_size', 'media_type', 'format_type', 
+                ]}),
+            ('Publishing',
+                {'fields': [
+                    'license', 'rights', 'publisher',
+                    'dct_modified', 'issued',
+                    ]}),
     ])

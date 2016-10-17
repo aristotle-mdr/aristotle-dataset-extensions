@@ -12,6 +12,7 @@ class DataCatalog(aristotle.models.concept):
     """
     A data catalog is a curated collection of metadata about datasets.
     """
+    template = "aristotle_dse/concepts/datacatalog.html"
     issued = models.DateField(
             blank=True, null=True,
             help_text=_('Date of formal issuance (e.g., publication) of the catalog.'),
@@ -41,7 +42,14 @@ class DataCatalog(aristotle.models.concept):
                 'it should be replicated on each distribution.'
             ),
         )
-
+    
+    @property
+    def publishing_organisations(self):
+        return aristotle.models.Organization.objects.filter(dataset__catalog=self).distinct()
+    
+    # @property
+    # def homepage(self):
+    #     return self.originURI
 
 class Dataset(aristotle.models.concept):
     """
@@ -62,7 +70,7 @@ class Dataset(aristotle.models.concept):
         )
     accrual_periodicity = models.TextField(
             blank=True, null=True,
-            help_text=_('	The frequency at which dataset is published.'),
+            help_text=_('The frequency at which dataset is published.'),
         )
     spatial = models.TextField(
             blank=True, null=True,
@@ -98,7 +106,7 @@ class Distribution(aristotle.models.concept):
     of the dataset or different endpoints.
     Examples of distributions include a downloadable CSV file, an API or an RSS feed
     """
-    template = "aristotle_dse/concepts/dataset.html"
+    template = "aristotle_dse/concepts/distribution.html"
 
     specification = models.ForeignKey(
             'DataSetSpecification',
@@ -113,6 +121,11 @@ class Distribution(aristotle.models.concept):
     dct_modified = models.DateTimeField(
             blank=True, null=True,
             help_text=_('Most recent date on which the catalog was changed, updated or modified.'),
+        )
+    dataset = models.ForeignKey(
+            Dataset,
+            blank=True, null=True,
+            help_text=_('Connects a distribution to its available datasets'),
         )
     publisher = models.ForeignKey(
             aristotle.models.Organization,
@@ -142,7 +155,7 @@ class Distribution(aristotle.models.concept):
             max_length=512,
             help_text=_('The media type of the distribution as defined by IANA.'),
         )
-    media_type = models.CharField(
+    format_type = models.CharField(  # renamed from format as python will complain
             max_length=512,
             help_text=_('The file format of the distribution.'),
         )
@@ -310,23 +323,3 @@ class DSSClusterInclusion(DSSInclusion):
     @property
     def include(self):
         return self.child
-
-def testData():
-    pw,c = aristotle.models.Workgroup.objects.get_or_create(name="Possum Workgroup")
-    de,c = aristotle.models.DataElement.objects.get_or_create(name="Person-sex, Code N",
-            workgroup=pw,definition="The sex of the person with a code.",
-            )
-
-    dss,c = DataSetSpecification.objects.get_or_create(name="Person Dataset",
-        workgroup=pw,definition="",
-        )
-    dss.addDataElement(de)
-
-    dss_cluster,c = DataSetSpecification.objects.get_or_create(name="Person cluster",
-        workgroup=pw,definition="",
-        )
-    de,c = aristotle.models.DataElement.objects.get_or_create(name="Person-Identifier, Code NNN",
-            workgroup=pw,definition="The identifier for a person.",
-            )
-    dss_cluster.addDataElement(de)
-    dss.addCluster(dss_cluster)

@@ -1,6 +1,10 @@
 {% extends "aristotle_mdr/concepts/managedContent.html" %}
 {% load i18n aristotle_tags %}
 
+{% block concept_title %}
+{% include "aristotle_dse/concepts/titles/display_title_distribution.html" %}
+{% endblock %}
+
 {% block asideContent %}
     <dl>
         {% if item.custodian %}
@@ -20,21 +24,17 @@ For more details on how to access this data contact the data custodian listed be
 
 <h2>Data source details</h2>
 <dl class="">
-    <dt>Dataset specification</dt>
-    <dd>{% if item.specification %}
-            {% if item.specification|can_view:request.user %}
-                {% include "aristotle_mdr/helpers/inlineDetails.html" with item=item.specification %}
-            {% else %}
-                {% trans "Specification not available at this time" %}
-            {% endif %}
-        {% else %}
-            {% trans "No specification stated" %}
-        {% endif %}
+    <dt>Contained in:</dt><dd>
+        <a href="{{item.dataset.get_absolute_url}}">{{item.dataset.name}}</a>
     </dd>
-    {% if item.qualityStatement %}
-    <dt>Quality Statement</dt>
-        <dd><a href="{% url 'comet:qualitystatement' iid=item.qualityStatement.id %}">{{ item.qualityStatement }}</a></dd>
-    {% endif %}
+    <dt>aka:</dt>
+    <dd><ol>
+        {% for id in item.identifiers.all %}
+            <li>{{id.namespace.shorthand_prefix}}::{{id.identifier}}</li>
+        {% endfor %}
+    </ol></dd>
+    <dt style="float:left">Licence</dt> <dd>{{ distribution.license | safe }}</dd>
+    <dt style="float:left">Rights</dt> <dd>{{ distribution.rights | safe }}</dd>
     <dt>Data Custodian</dt>
     <dd>{% if item.custodian %}
             {{ item.custodian }}
