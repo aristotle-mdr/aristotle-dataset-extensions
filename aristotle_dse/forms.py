@@ -1,9 +1,7 @@
-import autocomplete_light
-autocomplete_light.autodiscover()
-
 from django import forms
 from aristotle_mdr.perms import user_can_view, user_can_edit
 from aristotle_dse import models
+from aristotle_mdr.contrib.autocomplete import widgets
 
 class AddDataElementsToDSSForm(forms.Form):
     cardinality = forms.ChoiceField(choices=models.CARDINALITY,widget=forms.RadioSelect)
@@ -14,10 +12,11 @@ class AddDataElementsToDSSForm(forms.Form):
         self.dss = kwargs.pop('dss')
         self.user = kwargs.pop('user')
         super(AddDataElementsToDSSForm, self).__init__(*args, **kwargs)
+        from aristotle_mdr.models import DataElement
         self.fields['dataElements']=forms.ModelMultipleChoiceField(
                 queryset=self.qs,
                 label="Add Data Elements",
-                widget=autocomplete_light.MultipleChoiceWidget("AutocompleteDataElement")
+                widget=widgets.ConceptAutocompleteSelectMultiple(model=DataElement)
                 )
 
     def clean_dataElements(self):
@@ -48,7 +47,7 @@ class AddClustersToDSSForm(forms.Form):
         self.fields['clusters']=forms.ModelMultipleChoiceField(
                 queryset=self.qs,
                 label="Add Clusters",
-                widget=autocomplete_light.MultipleChoiceWidget("AutocompleteDataSetSpecification")
+                widget=widgets.ConceptAutocompleteSelectMultiple(model=models.DataSetSpecification)
                 )
 
     def clean_dataElements(self):
