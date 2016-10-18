@@ -77,7 +77,7 @@ class DataCatalogViewPage(LoggedInViewConceptPages,TestCase):
     itemType=models.DataCatalog
 
 
-class DataCatalogViewPage(LoggedInViewConceptPages,TestCase):
+class DatasetViewPage(LoggedInViewConceptPages,TestCase):
     url_name='dataset'
     itemType=models.Dataset
 
