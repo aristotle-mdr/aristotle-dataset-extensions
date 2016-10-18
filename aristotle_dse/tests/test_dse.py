@@ -71,16 +71,17 @@ class DataSetSpecificationViewPage(LoggedInViewConceptPages,TestCase):
         response = self.client.get(check_url)
         self.assertTrue(response.status_code,200)
 
-class DataSourceVisibility(ManagedObjectVisibility,TestCase):
-    def setUp(self):
-        super(DataSourceVisibility, self).setUp()
-        self.item = models.DataSource.objects.create(name="Test DataSource",
-            workgroup=self.wg,
-            )
 
-class DataSourceAdmin(AdminPageForConcept,TestCase):
-    itemType=models.DataSource
+class DataCatalogViewPage(LoggedInViewConceptPages,TestCase):
+    url_name='datacatalog'
+    itemType=models.DataCatalog
 
-class DataSourceViewPage(LoggedInViewConceptPages,TestCase):
-    url_name='datasource'
-    itemType=models.DataSource
+
+class DataCatalogViewPage(LoggedInViewConceptPages,TestCase):
+    url_name='dataset'
+    itemType=models.Dataset
+
+
+class DistributionViewPage(LoggedInViewConceptPages,TestCase):
+    url_name='distribution'
+    itemType=models.Distribution
