@@ -1,9 +1,9 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.views.generic import TemplateView
 
 from aristotle_dse import views
 
-urlpatterns = patterns('aristotle_dse.views',
+urlpatterns = [
     url(r'^datasetspecification/(?P<iid>\d+)/?$', views.datasetspecification, name='dataSetSpecification'),
     url(r'^add/deToDss/(?P<dss_id>\d+)', views.addDataElementsToDSS, name='addDataElementsToDSS'),
     url(r'^add/clustersToDss/(?P<dss_id>\d+)', views.addClustersToDSS, name='addClustersToDSS'),
@@ -17,4 +17,4 @@ urlpatterns = patterns('aristotle_dse.views',
 #These are required for about pages to work. Include them, or custom items will die!
     url(r'^about/(?P<template>.+)/?$', views.DynamicTemplateView.as_view(), name="about"),
     url(r'^about/?$', TemplateView.as_view(template_name='aristotle_dse/static/about_aristotle_dse.html'), name="about"),
-)
+]
