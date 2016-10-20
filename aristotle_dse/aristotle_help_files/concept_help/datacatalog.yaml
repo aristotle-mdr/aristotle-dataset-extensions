@@ -1,7 +1,7 @@
 - model: aristotle_mdr_help.concepthelp
   fields:
     app_label: aristotle_dse
-    concept_type: datasetspecification
+    concept_type: datacatalog
     language: en
     brief: A representation of a catalog of data.
     offical_definition: 
