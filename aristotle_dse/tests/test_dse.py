@@ -49,7 +49,7 @@ class DataSetSpecificationViewPage(LoggedInViewConceptPages,TestCase):
         check_url = reverse('aristotle:check_cascaded_states', args=[self.item1.pk])
         response = self.client.get(self.get_page(self.item1))
         self.assertEqual(response.status_code,302)
-        self.assertNotContains(response, check_url)
+        # self.assertNotContains(response, check_url)  # No content on the page as the user was redirected to a login page
         
         response = self.client.get(check_url)
         self.assertTrue(response.status_code,403)
