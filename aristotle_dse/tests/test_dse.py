@@ -49,7 +49,7 @@ class DataSetSpecificationViewPage(LoggedInViewConceptPages,TestCase):
         check_url = reverse('aristotle:check_cascaded_states', args=[self.item1.pk])
         response = self.client.get(self.get_page(self.item1))
         self.assertEqual(response.status_code,302)
-        self.assertTrue(check_url not in response.content)
+        self.assertNotContains(response, check_url)
         
         response = self.client.get(check_url)
         self.assertTrue(response.status_code,403)
@@ -57,16 +57,16 @@ class DataSetSpecificationViewPage(LoggedInViewConceptPages,TestCase):
         self.login_editor()
         response = self.client.get(self.get_page(self.item1))
         self.assertEqual(response.status_code,200)
-        self.assertTrue(check_url not in response.content) # no child items, nothing to review
+        self.assertNotContains(response, check_url)  # no child items, nothing to review
 
         response = self.client.get(check_url)
         self.assertTrue(response.status_code,403)
 
-        self.test_add_data_element() # add a data element
+        self.test_add_data_element()  # add a data element
         
         response = self.client.get(self.get_page(self.item1))
         self.assertEqual(response.status_code,200)
-        self.assertTrue(check_url in response.content) # now there are child items, we can review
+        self.assertContains(response, check_url)  # now there are child items, we can review
 
         response = self.client.get(check_url)
         self.assertTrue(response.status_code,200)
