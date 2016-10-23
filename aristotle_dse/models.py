@@ -149,13 +149,16 @@ class Distribution(aristotle.models.concept):
             help_text=_('A file that contains the distribution of the dataset in a given format.'),
         )
     byte_size = models.TextField(  # Why text? Because CKAN returns ??? Maybe we can clean in the future
+            blank=True, null=True,
             help_text=_('The size in bytes can be approximated when the precise size is not known.'),
         )
     media_type = models.CharField(
+            blank=True, null=True,
             max_length=512,
             help_text=_('The media type of the distribution as defined by IANA.'),
         )
     format_type = models.CharField(  # renamed from format as python will complain
+            blank=True, null=True,
             max_length=512,
             help_text=_('The file format of the distribution.'),
         )

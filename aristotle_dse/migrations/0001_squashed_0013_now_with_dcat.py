@@ -10,11 +10,10 @@ class Migration(migrations.Migration):
     replaces = [(b'aristotle_dse', '0001_initial'), (b'aristotle_dse', '0002_auto_20150510_0249'), (b'aristotle_dse', '0003_add_clusters_improve_names'), (b'aristotle_dse', '0004_auto_20160103_0200'), (b'aristotle_dse', '0005_improve_inculsion_help_text'), (b'aristotle_dse', '0006_auto_20160103_1855'), (b'aristotle_dse', '0007_add_ordering_to_inclusions'), (b'aristotle_dse', '0008_auto_20160318_2335'), (b'aristotle_dse', '0009_auto_20160725_1958'), (b'aristotle_dse', '0010_datasource_specification'), (b'aristotle_dse', '0011_auto_20160726_2015'), (b'aristotle_dse', '0012_fix_concept_fields'), (b'aristotle_dse', '0013_now_with_dcat')]
 
     dependencies = [
-        ('aristotle_mdr', '0009_add_explicit_related_name_for_values'),
-        ('aristotle_mdr', '0017_add_organisations'),
-        ('aristotle_mdr', '0013_concept_field_fixer_part1'),
         ('aristotle_mdr_identifiers', '0001_initial'),
-        ('aristotle_mdr', '0001_initial'),
+        ('aristotle_mdr', '0013_concept_field_fixer_part1'),
+        ('aristotle_mdr', '0001_squashed_0012_better_workflows'),
+        ('aristotle_mdr', '0017_add_organisations'),
     ]
 
     operations = [
