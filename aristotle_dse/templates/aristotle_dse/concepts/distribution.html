@@ -5,6 +5,18 @@
 {% include "aristotle_dse/concepts/titles/display_title_distribution.html" %}
 {% endblock %}
 
+{% block extra_head_scripts %}
+<style>
+    .file_type {
+        border:1px solid black;
+        border-top-right-radius: 10px;
+        padding:4px;
+        font-size:8pt;
+    }
+</style>
+
+{% endblock %}
+
 {% block asideContent %}
     <dl>
         {% if item.custodian %}
@@ -15,16 +27,11 @@
 {% endblock %}
 
 {% block objSpecific %}
-{% if item.linkToData %}
-<strong>Data is available at </strong><a href="{{ item.linkToData }}">{{ item.linkToData }}</a>.
-{% else %}
-No link to the data is available.
-{% endif %}
 For more details on how to access this data contact the data custodian listed below.
 
 <h2>Data source details</h2>
 <dl class="">
-    <dt>Contained in:</dt><dd>
+    <dt>Contained in</dt><dd>
         <a href="{{item.dataset.get_absolute_url}}">{{item.dataset.name}}</a>
     </dd>
     <dt>aka:</dt>
@@ -33,22 +40,53 @@ For more details on how to access this data contact the data custodian listed be
             <li>{{id.namespace.shorthand_prefix}}::{{id.identifier}}</li>
         {% endfor %}
     </ol></dd>
-    <dt style="float:left">Licence</dt> <dd>{{ distribution.license | safe }}</dd>
-    <dt style="float:left">Rights</dt> <dd>{{ distribution.rights | safe }}</dd>
-    <dt>Data Custodian</dt>
-    <dd>{% if item.custodian %}
-            {{ item.custodian }}
-        {% else %}
-            {% trans "No custodian stated" %}
+    <dt style="float:left">Licence</dt> <dd>{{ item.license | safe }}</dd>
+    <dt style="float:left">Rights</dt> <dd>{{ item.rights | safe }}</dd>
+
+    <div class="well">
+        <span class="file_type">{{item.format_type}}</span>
+        {% include "aristotle_mdr/helpers/itemLink.html" with item=item %}
+        {% if item.download_URL %}
+        <a href='{{item.download_URL}}' class='btn btn-default'>
+            <i class='fa fa-download'></i>
+            Download
+        </a>
         {% endif %}
-    </dd>
-    <dt>Frequency</dt>
-    <dd>{% if item.frequency %}
-            {{ item.frequency }}
-        {% else %}
-            {% trans "No frequency stated" %}
+        {% if item.distributiondataelementpath_set.exists %}
+        <p>
+        <strong>Data Elements in this dataset</strong>
+        <table class='table table-striped'>
+            <thead>
+                <tr>
+                    <th>Path name</th>
+                    <th>Data Element</th>
+                    <th>Definition</th>
+                    <th title='Number of datasets using this data element'>#</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for column in item.distributiondataelementpath_set.all %}
+                <tr>
+                    <td>
+                        <tt>{{column.logical_path}}</tt>
+                    </td>
+                    <td>
+                        <a href="{{column.data_element.get_absolute_url}}">{{column.data_element.name}}</a>
+                    </td>
+                    <td>
+                        {{column.data_element.definition|striptags}}
+                    </td>
+                    <td>
+                        {{column.data_element.distributiondataelementpath_set.count}}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </p>
         {% endif %}
-    </dd>
+    </div>
+
 </dl>
 
 {% endblock %}
