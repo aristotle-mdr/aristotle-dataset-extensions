@@ -7,18 +7,191 @@ from model_utils import Choices
 import aristotle_mdr as aristotle
 from aristotle_mdr.models import RichTextField
 
-class DataSource(aristotle.models.concept):
-    template = "aristotle_dse/concepts/dataSource.html"
-    #qualityStatement = models.ForeignKey(QualityStatement,blank=True,null=True)
-    linkToData = models.URLField(blank=True)
-    custodian = models.TextField(max_length=256,blank=True)
-    frequency = models.CharField(max_length=512, blank=True, null=True)
+
+class DataCatalog(aristotle.models.concept):
+    """
+    A data catalog is a curated collection of metadata about datasets.
+    """
+    template = "aristotle_dse/concepts/datacatalog.html"
+    issued = models.DateField(
+            blank=True, null=True,
+            help_text=_('Date of formal issuance (e.g., publication) of the catalog.'),
+        )
+    dct_modified = models.DateTimeField(
+            blank=True, null=True,
+            help_text=_('Most recent date on which the catalog was changed, updated or modified.'),
+        )
+    homepage = models.URLField(
+            blank=True, null=True,
+            help_text=_('The dataset specification to which this data source conforms'),
+        )
+    publisher = models.ForeignKey(
+            aristotle.models.Organization,
+            blank=True, null=True,
+            help_text=_('The entity responsible for making the catalog online.'),
+        )
+    spatial = models.TextField(
+            blank=True, null=True,
+            help_text=_('The geographical area covered by the catalog.'),
+        )
+    license = models.TextField(
+            blank=True, null=True,
+            help_text=_(
+                'This links to the license document under which the catalog is made available and not the datasets. '
+                'Even if the license of the catalog applies to all of its datasets and distributions, '
+                'it should be replicated on each distribution.'
+            ),
+        )
+    
+    @property
+    def publishing_organisations(self):
+        return aristotle.models.Organization.objects.filter(dataset__catalog=self).distinct()
+    
+    # @property
+    # def homepage(self):
+    #     return self.originURI
+
+class Dataset(aristotle.models.concept):
+    """
+    A collection of data, published or curated by a single agent, and available for access or 
+    download in one or more formats.
+    """
+    template = "aristotle_dse/concepts/dataset.html"
+    # Themes = slots with name 'theme'
+    # Keywords = slots with name 'keyword'
+    issued = models.DateField(
+            blank=True, null=True,
+            help_text=_('Date of formal issuance (e.g., publication) of the catalog.'),
+        )
+    publisher = models.ForeignKey(
+            aristotle.models.Organization,
+            blank=True, null=True,
+            help_text=_('An entity responsible for making the dataset available.'),
+        )
+    accrual_periodicity = models.TextField(
+            blank=True, null=True,
+            help_text=_('The frequency at which dataset is published.'),
+        )
+    spatial = models.TextField(
+            blank=True, null=True,
+            help_text=_('Spatial coverage of the dataset.'),
+        )
+    temporal = models.TextField(
+            blank=True, null=True,
+            help_text=_('The temporal period that the dataset covers.'),
+        )
+    catalog = models.ForeignKey(
+            DataCatalog,
+            blank=True, null=True,
+            help_text=_('An entity responsible for making the dataset available.'),
+        )
+    landing_page = models.URLField(
+            blank=True, null=True,
+            help_text=_('A Web page that can be navigated to in a Web browser to gain access to the dataset, its distributions and/or additional information'),
+        )
+    contact_point = models.TextField(
+            blank=True, null=True,
+            help_text=_('The temporal period that the dataset covers.'),
+        )
+    dct_modified = models.DateTimeField(
+            blank=True, null=True,
+            help_text=_('Most recent date on which the catalog was changed, updated or modified.'),
+        )
+
+class Distribution(aristotle.models.concept):
+    """
+    Represents a specific available form of a dataset.
+    Each dataset might be available in different forms, 
+    these forms might represent different formats
+    of the dataset or different endpoints.
+    Examples of distributions include a downloadable CSV file, an API or an RSS feed
+    """
+    template = "aristotle_dse/concepts/distribution.html"
+
     specification = models.ForeignKey(
             'DataSetSpecification',
             help_text=_('The dataset specification to which this data source conforms'),
             blank=True,
             null=True,
             )
+    issued = models.DateField(
+            blank=True, null=True,
+            help_text=_('Date of formal issuance (e.g., publication) of the catalog.'),
+        )
+    dct_modified = models.DateTimeField(
+            blank=True, null=True,
+            help_text=_('Most recent date on which the catalog was changed, updated or modified.'),
+        )
+    dataset = models.ForeignKey(
+            Dataset,
+            blank=True, null=True,
+            help_text=_('Connects a distribution to its available datasets'),
+        )
+    publisher = models.ForeignKey(
+            aristotle.models.Organization,
+            blank=True, null=True,
+            help_text=_('An entity responsible for making the dataset available.'),
+        )
+    license = models.TextField(
+            blank=True, null=True,
+            help_text=_('This links to the license document under which the distribution is made available.'),
+        )
+    rights = models.TextField(
+            blank=True, null=True,
+            help_text=_('Information about rights held in and over the distribution.'),
+        )
+    access_URL = models.URLField(
+            blank=True, null=True,
+            help_text=_('A landing page, feed, SPARQL endpoint or other type of resource that gives access to the distribution of the dataset.'),
+        )
+    download_URL = models.URLField(
+            blank=True, null=True,
+            help_text=_('A file that contains the distribution of the dataset in a given format.'),
+        )
+    byte_size = models.TextField(  # Why text? Because CKAN returns ??? Maybe we can clean in the future
+            blank=True, null=True,
+            help_text=_('The size in bytes can be approximated when the precise size is not known.'),
+        )
+    media_type = models.CharField(
+            blank=True, null=True,
+            max_length=512,
+            help_text=_('The media type of the distribution as defined by IANA.'),
+        )
+    format_type = models.CharField(  # renamed from format as python will complain
+            blank=True, null=True,
+            max_length=512,
+            help_text=_('The file format of the distribution.'),
+        )
+
+
+class DistributionDataElementPath(aristotle.models.aristotleComponent):
+    class Meta:
+        ordering = ['order']
+
+    @property
+    def parentItem(self):
+        return self.distribution
+
+    distribution  = models.ForeignKey(
+            Distribution,
+            blank=True, null=True,
+            help_text=_('A relation to the DCAT Distribution Record.'),
+    )
+    data_element = models.ForeignKey(
+            aristotle.models.DataElement ,
+            blank=True, null=True,
+            help_text=_('An entity responsible for making the dataset available.'),
+    )
+    logical_path = models.CharField(
+        max_length=256,
+        help_text=_("A text expression that specifies how to identify which series of data in the distribution maps to this data element")
+    )
+    order = models.PositiveSmallIntegerField(
+        "Position",
+        null=True, blank=True,
+        help_text=_("Column position within a dataset.")
+    )
+
 
 
 CARDINALITY = Choices(('optional', _('Optional')),('conditional', _('Conditional')), ('mandatory', _('Mandatory')))
@@ -32,7 +205,7 @@ class DataSetSpecification(aristotle.models.concept):
     template = "aristotle_dse/concepts/dataSetSpecification.html"
     ordered = models.BooleanField(
             default=False,
-            help_text=_("Indiciates if the ordering for a dataset is must match exactly the order laid out in the specification.")
+            help_text=_("Indicates if the ordering for a dataset is must match exactly the order laid out in the specification.")
             )
     statistical_unit = models.ForeignKey(
             aristotle.models._concept,
@@ -153,23 +326,3 @@ class DSSClusterInclusion(DSSInclusion):
     @property
     def include(self):
         return self.child
-
-def testData():
-    pw,c = aristotle.models.Workgroup.objects.get_or_create(name="Possum Workgroup")
-    de,c = aristotle.models.DataElement.objects.get_or_create(name="Person-sex, Code N",
-            workgroup=pw,definition="The sex of the person with a code.",
-            )
-
-    dss,c = DataSetSpecification.objects.get_or_create(name="Person Dataset",
-        workgroup=pw,definition="",
-        )
-    dss.addDataElement(de)
-
-    dss_cluster,c = DataSetSpecification.objects.get_or_create(name="Person cluster",
-        workgroup=pw,definition="",
-        )
-    de,c = aristotle.models.DataElement.objects.get_or_create(name="Person-Identifier, Code NNN",
-            workgroup=pw,definition="The identifier for a person.",
-            )
-    dss_cluster.addDataElement(de)
-    dss.addCluster(dss_cluster)

@@ -1,0 +1,13 @@
+- model: aristotle_mdr_help.concepthelp
+  fields:
+    app_label: aristotle_dse
+    concept_type: distribution
+    language: en
+    brief: An accessible form of a dataset as for example a downloadable file.
+    offical_definition: 
+    official_reference: 
+    official_link:
+    body: >
+        <p>A distribution represents an accessible form of a dataset as for example
+        a downloadable file, an RSS feed or a web service that provides the data.
+        </p>
