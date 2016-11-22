@@ -36,6 +36,12 @@ For more details on how to access this data contact the data custodian listed be
 
 <h2>Data source details</h2>
 <dl class="">
+    <dt>aka:</dt>
+    <dd><ol>
+        {% for id in item.identifiers.all %}
+            <li>{{id.namespace.shorthand_prefix}}::{{id.identifier}}</li>
+        {% endfor %}
+    </ol></dd>
     <dt>Frequency</dt>
     <dd>{% if item.accrual_periodicity %}
             {{ item.accrual_periodicity }}
@@ -47,16 +53,17 @@ For more details on how to access this data contact the data custodian listed be
     <dd>{% if item.distribution_set.exists %}
         <ol>
             {% if item.distribution_set.exists %}
-                {% for distribution in item.distribution_set.all %}
-            <li class="well">
-                    <span class="file_type">{{distribution.format_type}}</span>
-                    {% include "aristotle_mdr/helpers/itemLink.html" with item=distribution %}
-                    {% if distribution.origin_URI %}
-                    <a href='{{distribution.origin_URI}}' class='btn btn-default'>
-                        <i class='fa fa-download'></i>
-                        Download
-                    </a>
-                    {% endif %}
+                {% for distribution in item.distribution_set.all|can_view_iter:request.user %}
+                    <li class="well">
+                        <span class="file_type">{{distribution.format_type}}</span>
+                        {% include "aristotle_mdr/helpers/itemLink.html" with item=distribution %}
+                        {% if distribution.origin_URI %}
+                        <a href='{{distribution.origin_URI}}' class='btn btn-default'>
+                            <i class='fa fa-download'></i>
+                            Download
+                        </a>
+                        {% endif %}
+                        
                         <div>
                             {{ distribution.definition | safe }}
                         </div>
@@ -64,47 +71,38 @@ For more details on how to access this data contact the data custodian listed be
                             <dt style="float:left">Licence</dt><dd>{{ distribution.license | safe }}</dd>
                             <dt style="float:left">Rights</dt><dd>{{ distribution.rights | safe }}</dd>
                         </dl>
-                        <ul>
-                            {% for s in distribution.current_statuses %}
-                                <li>[{{ s.registrationAuthority }}: {{ s.state_name }}]</li>
-                            {% empty %}
-                                <li><em>Unregistered</em></li>
-                            {% endfor %}
-                        </ul>
                         {% if distribution.distributiondataelementpath_set.exists %}
                         <strong>Data Elements in this dataset</strong>
-                            <table class='table table-striped'>
-                                <thead>
-                                    <tr>
-                                        <th>Path name</th>
-                                        <th>Data Element</th>
-                                        <th>Definition</th>
-                                        <th title='Number of datasets using this data element'>#</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                {% for column in distribution.distributiondataelementpath_set.all %}
-                                    <tr>
-                                        <td>
-                                            <tt>{{column.column_name}}</tt>
-                                        </td>
-                                        <td>
-                                            <a href="{{column.data_element.get_absolute_url}}">{{column.data_element.name}}</a>
-                                        </td>
-                                        <td>
-                                            {{column.data_element.definition|striptags}}
-                                        </td>
-                                        <td>
-                                            {{column.data_element.columns.count}}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                            {% else %}
-                                <em>No linked data elements available</em>
-                            {% endif %}
-            </li>
+                        <table class='table table-striped'>
+                            <thead>
+                                <tr>
+                                    <th>Path name</th>
+                                    <th>Data Element</th>
+                                    <th>Definition</th>
+                                    <th title='Number of datasets using this data element'>#</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for column in distribution.distributiondataelementpath_set.all %}
+                                <tr>
+                                    <td>
+                                        <tt>{{column.logical_path}}</tt>
+                                    </td>
+                                    <td>
+                                        <a href="{{column.data_element.get_absolute_url}}">{{column.data_element.name}}</a>
+                                    </td>
+                                    <td>
+                                        {{column.data_element.definition|striptags}}
+                                    </td>
+                                    <td>
+                                        {{column.data_element.distributiondataelementpath_set.count}}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        {% endif %}
+                    </li>
                 {% endfor %}
             {% endif %}
         </ol>

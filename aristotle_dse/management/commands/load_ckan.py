@@ -114,6 +114,13 @@ class Command(BaseCommand):
             default=True,
             help='Disables SSL verification',
         )
+        parser.add_argument(
+            '-q',
+            '--query',
+            dest='query',
+            default=None,
+            help='Query string.',
+        )
 
     def vprint(self, *args, **kwargs):
         verbosity = kwargs.pop('verbosity', 0) or kwargs.pop('v', 0) 
@@ -129,27 +136,28 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.api_base = options['ckan_api_link']
-        catalog_url = options['catalog_url']
+        self.catalog_url = options['catalog_url']
         self.get_all = options['get_all']
         self.days_to_fetch = options['days_to_fetch']
         self.verbosity = options['verbosity']
         self.verify_ssl = options['verify_ssl']
         self.force_reload = options['force_reload']
+        self.query = options['query']
 
-        if not (self.get_all or self.days_to_fetch):
-            raise CommandError("Specify the number of days to fetch or request to get all")
+        if not (self.get_all or self.days_to_fetch or self.query):
+            raise CommandError("Specify the number of days to fetch, enter a query or request to get all")
 
         self.org, c = MDR.Organization.objects.get_or_create(
-            uri = catalog_url,
+            uri = self.catalog_url,
             defaults = {
-                'name':catalog_url,
-                'definition':'Auto-created Organization for %s' % catalog_url
+                'name':self.catalog_url,
+                'definition':'Auto-created Organization for %s' % self.catalog_url
             }
         )
         catalog_details = {
-            'name':catalog_url,
-            'definition':'Auto-created Catalog for %s' % catalog_url,
-            'origin_URI': catalog_url,
+            'name':self.catalog_url,
+            'definition':'Auto-created Catalog for %s' % self.catalog_url,
+            'origin_URI': self.catalog_url,
             'publisher': self.org
         }
         if options.get('catalog_name', None):
@@ -158,12 +166,12 @@ class Command(BaseCommand):
             catalog_details['definition'] = options['catalog_definition']
 
         self.catalog, c = DSE.DataCatalog.objects.update_or_create(
-            homepage = catalog_url,
+            homepage = self.catalog_url,
             defaults = catalog_details
             )
         self.catalog_namespace, c = MDR_ID.Namespace.objects.get_or_create(
             naming_authority = self.org,
-            shorthand_prefix = slugify(catalog_url)
+            shorthand_prefix = slugify(self.catalog_url)
         )
 
         gotten = self.load_ckan(force_reload=self.force_reload)
@@ -190,17 +198,20 @@ class Command(BaseCommand):
                     self.vprint("   skipping load of ", dataset['name'], v=1)
 
     def load_ckan_some(self, force_reload=True):
-        now = datetime.datetime.now()
-        then = now - datetime.timedelta(days=int(self.days_to_fetch))
-        solr_time_query = "metadata_modified:[%sZ TO %sZ]" % (
-            then.isoformat(),
-            now.isoformat(),
-        )
-        self.vprint("SOLR Time query -- %s" %(solr_time_query), v=3)
+        if not self.query:
+            now = datetime.datetime.now()
+            then = now - datetime.timedelta(days=int(self.days_to_fetch))
+            query = "metadata_modified:[%sZ TO %sZ]" % (
+                then.isoformat(),
+                now.isoformat(),
+            )
+            self.vprint("SOLR Time query -- %s" %(query), v=3)
+        else:
+            query = self.query
         ckan = requests.get(
             self.api_base+'action/package_search',
             params={
-                'q': solr_time_query
+                'q': query
             },
             verify=self.verify_ssl
         )
@@ -217,7 +228,7 @@ class Command(BaseCommand):
             ckan = requests.get(
                 self.api_base+'action/package_search',
                 params={
-                    'q': solr_time_query,
+                    'q': query,
                     'start': offset,
                     'rows': num_per_query
                 },
@@ -229,15 +240,16 @@ class Command(BaseCommand):
             ckan = json.loads(ckan.text)
 
             for dataset in ckan['result']['results']:
+                dataset_name=dataset['name']
                 dataset_exists = DSE.Dataset.objects.filter(
                     identifiers__namespace__naming_authority=self.catalog.publisher,
-                    identifiers__identifier=dataset['name'],
+                    identifiers__identifier=dataset_name,
                     catalog=self.catalog
                 ).exists()
                 if not dataset_exists or force_reload:
                     self.load_dataset(dataset)
                 else:
-                    self.vprint("   skipping load of ", dataset['name'], v=1)
+                    self.vprint("   skipping load of ", dataset_name, v=1)
 
     def load_ckan(self, force_reload=True):
         if self.get_all:
@@ -311,11 +323,12 @@ class Command(BaseCommand):
                 ds.definition = dataset.get('notes','') or ds.definition
                 ds.spatial = dataset.get('spatial_coverage','') or ds.spatial
                 ds.temporal = dataset.get('temporal_coverage_from','') or ds.temporal
-                # ds.comments = dataset.get('notes','') or ds.comments
+                ds.comments = dataset.get('notes','') or ds.comments
 
                 ds.publisher = publishing_org or ds.publisher
                 ds.contact_point = dataset.get('contact_point','') or ds.contact_point
                 ds.accrual_periodicity = dataset.get('update_freq','') or ds.accrual_periodicity
+                ds.origin_URI = "%s/dataset/%s" % (self.catalog_url, dataset['name'])
 
                 ds.save()
                 if ds_checks.count() == 0:
@@ -343,7 +356,9 @@ class Command(BaseCommand):
                     dd.name = resource.get('name', False) or dd.name or resource.get('description', False) or "No name"
                     dd.license = dataset.get('license_title','') or dd.license
                     dd.definition = resource.get('Description','') or resource.get('description','') or dd.definition or 'No description'
-                    dd.origin_URI = resource['url'] or dd.origin_URI
+                    dd.access_URL = resource['url'] or dd.access_URL
+                    dd.download_URL = resource['url'] or dd.download_URL
+                    ds.origin_URI = "%s/dataset/%s/resource/%s" % (self.catalog_url, dataset['name'], dd.name)
                     #dd.order = resource['position'] or dd.order
                     dd.format_type = resource['format'] or dd.format_type
 

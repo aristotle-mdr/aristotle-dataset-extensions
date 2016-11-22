@@ -1,0 +1,17 @@
+- model: aristotle_mdr_help.concepthelp
+  fields:
+    app_label: aristotle_dse
+    concept_type: datacatalog
+    language: en
+    brief: A representation of a catalog of data.
+    offical_definition: 
+    official_reference: 
+    official_link:
+    body: >
+        <p>A data catalog conforms to DCAT if:
+        It is organized into datasets and distributions.
+        An RDF description of the catalog itself and its datasets and distributions is available (but the choice of RDF syntaxes, access protocols, and access policies is not mandated by this specification).
+        The contents of all metadata fields that are held in the catalog, and that contain data about the catalog itself and its dataset and distributions, are included in this RDF description, expressed using the appropriate classes and properties from DCAT, except where no such class or property exists.
+        All classes and properties defined in DCAT are used in a way consistent with the semantics declared in this specification.
+        DCAT-compliant catalogs may include additional non-DCAT metadata fields and additional RDF data in the catalog's RDF description.
+        </p>
