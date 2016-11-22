@@ -202,6 +202,11 @@ class DataSetSpecification(aristotle.models.concept):
     :model:`aristotle_dse.DataSource`.
     """
     edit_page_excludes = ['clusters','data_elements']
+    serialize_weak_entities = [
+        ('clusters', 'dssclusterinclusion_set'),
+        ('data_elements', 'dssdeinclusion_set'),
+    ]
+
     template = "aristotle_dse/concepts/dataSetSpecification.html"
     ordered = models.BooleanField(
             default=False,
