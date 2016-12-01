@@ -1,25 +1,18 @@
 language: python
 python:
   - "2.7"
+  - "3.5"
 
 services:
  #- mysql
  - postgresql
 env:
-  - DJ=1.8 DB=sqlitememory
   - DJ=1.8 DB=sqlitefile
   - DJ=1.8 DB=postgres
-#  - DJ=1.9 DB=sqlitememory
-#  - DJ=1.9 DB=sqlitefile
-#  - DJ=1.9 DB=postgres   
-
-#  - DJ=1.9 DB=mysql
-#  - DJ=1.8 DB=mysql
 
 before_install:
   - npm install -g less@1.7.4 # Required for static-precompiler
 before_script:
-#  - mysql -e 'create database aristotle_test_db;'
   - psql -c 'create database aristotle_test_db;' -U postgres
 install:
   - if [[ $DB == postgres ]]; then pip install -q psycopg2 --quiet --use-mirrors; fi
