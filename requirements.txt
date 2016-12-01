@@ -1,4 +1,4 @@
 --index-url https://pypi.python.org/simple/
 
-#-e git+git://github.com/LegoStormtroopr/aristotle-metadata-registry@py3-nov@master#egg=aristotle-metadata-registry
+-e git+git://github.com/LegoStormtroopr/aristotle-metadata-registry@py3-nov@master#egg=aristotle-metadata-registry
 -e .
