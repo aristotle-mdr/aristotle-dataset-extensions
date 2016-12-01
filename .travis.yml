@@ -10,13 +10,10 @@ env:
   - DJ=1.8 DB=sqlitefile
   - DJ=1.8 DB=postgres
 
-before_install:
-  - npm install -g less@1.7.4 # Required for static-precompiler
 before_script:
   - psql -c 'create database aristotle_test_db;' -U postgres
 install:
-  - if [[ $DB == postgres ]]; then pip install -q psycopg2 --quiet --use-mirrors; fi
-#  - if [[ $DB == mysql ]]; then pip install -q mysql-python --use-mirrors; fi
+  - if [[ $DB == postgres ]]; then pip install -q psycopg2 --quiet; fi
   - "pip install coveralls"
   - "pip install -r requirements.txt"
   - "pip install ."
