@@ -1,0 +1,20 @@
+- model: aristotle_mdr_help.concepthelp
+  fields:
+    app_label: aristotle_dse
+    concept_type: dataset
+    language: en
+    brief: A representation of a dataset in a catalog.
+    offical_definition: 
+    official_reference: 
+    official_link:
+    body: >
+        <p>A a dataset in DCAT is defined as a "collection of data, published or 
+        curated by a single agent, and available for access or download in one or 
+        more formats". A dataset does not have to be available as a downloadable 
+        file.
+        For example, a dataset that is available via an API can be defined as an 
+        instance of dcat:Dataset and the API can be defined as an instance of
+        <tt>dcat:Distribution</tt>. DCAT itself does not define properties specific
+        to APIs description. These are considered out of the scope of this version
+        of the vocabulary. Nevertheless, this can be defined as a profile of the
+        DCAT vocabulary.

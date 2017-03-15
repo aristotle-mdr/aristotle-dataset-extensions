@@ -49,7 +49,7 @@ class DataSetSpecificationViewPage(LoggedInViewConceptPages,TestCase):
         check_url = reverse('aristotle:check_cascaded_states', args=[self.item1.pk])
         response = self.client.get(self.get_page(self.item1))
         self.assertEqual(response.status_code,302)
-        self.assertTrue(check_url not in response.content)
+        # self.assertNotContains(response, check_url)  # No content on the page as the user was redirected to a login page
         
         response = self.client.get(check_url)
         self.assertTrue(response.status_code,403)
@@ -57,30 +57,31 @@ class DataSetSpecificationViewPage(LoggedInViewConceptPages,TestCase):
         self.login_editor()
         response = self.client.get(self.get_page(self.item1))
         self.assertEqual(response.status_code,200)
-        self.assertTrue(check_url not in response.content) # no child items, nothing to review
+        self.assertNotContains(response, check_url)  # no child items, nothing to review
 
         response = self.client.get(check_url)
         self.assertTrue(response.status_code,403)
 
-        self.test_add_data_element() # add a data element
+        self.test_add_data_element()  # add a data element
         
         response = self.client.get(self.get_page(self.item1))
         self.assertEqual(response.status_code,200)
-        self.assertTrue(check_url in response.content) # now there are child items, we can review
+        self.assertContains(response, check_url)  # now there are child items, we can review
 
         response = self.client.get(check_url)
         self.assertTrue(response.status_code,200)
 
-class DataSourceVisibility(ManagedObjectVisibility,TestCase):
-    def setUp(self):
-        super(DataSourceVisibility, self).setUp()
-        self.item = models.DataSource.objects.create(name="Test DataSource",
-            workgroup=self.wg,
-            )
 
-class DataSourceAdmin(AdminPageForConcept,TestCase):
-    itemType=models.DataSource
+class DataCatalogViewPage(LoggedInViewConceptPages,TestCase):
+    url_name='datacatalog'
+    itemType=models.DataCatalog
 
-class DataSourceViewPage(LoggedInViewConceptPages,TestCase):
-    url_name='datasource'
-    itemType=models.DataSource
+
+class DatasetViewPage(LoggedInViewConceptPages,TestCase):
+    url_name='dataset'
+    itemType=models.Dataset
+
+
+class DistributionViewPage(LoggedInViewConceptPages,TestCase):
+    url_name='distribution'
+    itemType=models.Distribution

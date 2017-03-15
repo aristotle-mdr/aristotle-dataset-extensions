@@ -2,6 +2,10 @@
 
 {% load aristotle_tags i18n %}
 
+{% block extra_head_scripts %}
+<link rel="stylesheet" href="{{ STATIC_URL }}/aristotle_dse/aristotle_dse.css" />
+{% endblock %}
+
 {% block objSpecific %}
 <h2>Metadata items in this Data Set Specification</h2>
     <p> Below is a list of all the components within this Dataset Specification.

@@ -1,0 +1,27 @@
+{% extends "aristotle_mdr/concepts/managedContent.html" %}
+{% load i18n aristotle_tags util_tags %}
+
+{% block asideContent %}
+    <dl>
+        {% if item.custodian %}
+        <dt>Data Custodian</dt>
+        <dd>{{ item.custodian }}</dd>
+        {% endif %}
+    </dl>
+{% endblock %}
+
+
+{% block objSpecific %}
+
+The following organizations have data with {{item.name}}:
+<ul>
+{% for d in item.publishing_organisations.all|order_by:"name" %}
+<li>
+    <a href="{{d.pk}}">
+        {{d}} - {{d.dataset_set.count}} datasets
+    </a>
+</li>
+
+{% endfor %}
+</ul>
+{% endblock %}
