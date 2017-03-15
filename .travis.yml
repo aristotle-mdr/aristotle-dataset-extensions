@@ -1,41 +1,73 @@
-language: python
-python:
-  - "2.7"
-
-services:
- #- mysql
- - postgresql
-env:
-  - DJ=1.8 DB=sqlitememory
-  - DJ=1.8 DB=sqlitefile
-  - DJ=1.8 DB=postgres
-#  - DJ=1.9 DB=sqlitememory
-#  - DJ=1.9 DB=sqlitefile
-#  - DJ=1.9 DB=postgres   
-
-#  - DJ=1.9 DB=mysql
-#  - DJ=1.8 DB=mysql
-
-before_install:
-  - npm install -g less@1.7.4 # Required for static-precompiler
-before_script:
-#  - mysql -e 'create database aristotle_test_db;'
-  - psql -c 'create database aristotle_test_db;' -U postgres
-install:
-  - if [[ $DB == postgres ]]; then pip install -q psycopg2 --quiet --use-mirrors; fi
-#  - if [[ $DB == mysql ]]; then pip install -q mysql-python --use-mirrors; fi
-  - "pip install coveralls"
-  - "pip install -r requirements.txt"
-  - "pip install ."
-  - pip install -q Django==$DJ --use-mirrors
-  - "pip install django_tools"
-
-# command to run tests
-script:
-  - coverage run --branch --source=aristotle_dse manage.py test aristotle_dse.tests
-after_success:
-  - coveralls
-
 # Lets run on the new infrastructure
 sudo: false
 
+language: python
+python:
+  - "3.5"
+  - "2.7"
+
+services:
+  - postgresql
+  - redis-server
+  - elasticsearch
+
+env:
+  - DOCS=1
+  - A11Y='metadata_item'
+  - A11Y='metadata_action'
+  - A11Y='static'
+  - DJANGO_VERSION='1.8'  DB=postgres  SEARCH=elastic
+  - DJANGO_VERSION='1.8'  DB=postgres  SEARCH=elastic
+  - DJANGO_VERSION='1.8'  DB=sqlite    SEARCH=whoosh
+  - DJANGO_VERSION='1.8'  DB=postgres  SEARCH=whoosh
+  - DJANGO_VERSION='1.8'  DB=mariadb   SEARCH=whoosh
+  - DJANGO_VERSION='1.8'  DB=mariadb   SEARCH=elastic
+
+  - DJANGO_VERSION='1.10' DB=sqlite    SEARCH=elastic
+  - DJANGO_VERSION='1.10' DB=sqlite    SEARCH=whoosh
+
+before_install:
+  - pip install codecov
+  - pip install coveralls
+
+install:
+  - pip install tox
+
+before_script:
+  - if [[ $SEARCH == elasticsearch ]]; then sleep 10; fi
+# Make a posgres database
+  - if [[ $DB == postgres ]]; then psql -c 'create database aristotle_test_db;' -U postgres; fi
+
+# command to run tests
+script:
+# Start a few workers
+#  - ./manage.py runworker --settings=aristotle_mdr.tests.settings.settings > worker1.log 2>&1 &
+  - if [[ "$DB" != "" ]]; then tox -e dj$DJANGO_VERSION-test-linux-db-$DB-search-$SEARCH --skip-missing-interpreters; fi
+# check documentation builds cleanly
+  - if [[ $DOCS == 1 ]]; then tox -e pep8 -e docs --skip-missing-interpreters; fi
+  - if [[ $A11Y != "" ]]; then tox -e ally-$A11Y --skip-missing-interpreters; fi
+#  - cat worker1.log
+after_success:
+  - coveralls
+
+addons:
+  apt:
+    sources:
+      - elasticsearch-2.x
+    packages:
+      - elasticsearch
+
+matrix:
+  exclude:
+    - python: "2.7"
+      env: A11Y='metadata_item'
+    - python: "2.7"
+      env: A11Y='metadata_action'
+    - python: "2.7"
+      env: A11Y='static'
+    - python: "2.7"
+      env: DOCS=1
+    - python: "2.7"
+      env: DJANGO_VERSION='1.10' DB=sqlite    SEARCH=elastic
+    - python: "2.7"
+      env: DJANGO_VERSION='1.10' DB=sqlite    SEARCH=whoosh
