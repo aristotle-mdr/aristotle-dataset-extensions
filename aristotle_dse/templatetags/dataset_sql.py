@@ -3,19 +3,23 @@ import re
 
 from aristotle_dse.models import CARDINALITY
 
+
 register = template.Library()
+
 
 @register.filter
 def column_name(dataelement):
     name = re.sub('[^a-zA-Z]+', '', dataelement.name)
     suffix = '_de_'+ str(dataelement.id)
-    return name[:30-(len(suffix))]+suffix
+    return name[:30 - (len(suffix))] + suffix
+
 
 @register.filter
 def table_name(dss):
     name = re.sub('[^a-zA-Z]+', '', dss.name)
-    suffix = '_dss_'+ str(dss.id)
-    return name[:30-(len(suffix))]+suffix
+    suffix = '_dss_' + str(dss.id)
+    return name[:30 - (len(suffix))] + suffix
+
 
 @register.filter
 def column_data_type(dataelementinclusion):
@@ -23,7 +27,7 @@ def column_data_type(dataelementinclusion):
     if not dataelementinclusion.dataElement.valueDomain:
         column_definition = fallback_column
         if dataelementinclusion.cardinality is not CARDINALITY.mandatory:
-        # if its optional, it must be nullable.
+            # if its optional, it must be nullable.
             column_definition += " NULL "
         return column_definition
 
@@ -34,7 +38,7 @@ def column_data_type(dataelementinclusion):
         column_definition = "BOOLEAN"
     elif data_type == "String":
         if valuedomain.maximum_length:
-            column_definition = "VARCHAR(%s)"%valuedomain.maximum_length
+            column_definition = "VARCHAR(%s)" % valuedomain.maximum_length
         else:
             column_definition = fallback_column
     elif data_type == "Date/Time":
@@ -45,12 +49,12 @@ def column_data_type(dataelementinclusion):
             f = _format.split('.')
             size = len(f[0]) + len(f[1])
             decimals = len(f[1])
-            column_definition = "DECIMAL(%s,%s)"%(size,decimals)
+            column_definition = "DECIMAL(%s,%s)" % (size, decimals)
         elif valuedomain.maximum_length:
-            column_definition = "FLOAT(%s)"%valuedomain.maximum_length
+            column_definition = "FLOAT(%s)" % valuedomain.maximum_length
         else:
             column_definition = "FLOAT(16)"
-    else: # Catch all.
+    else:  # Catch all.
         column_definition = fallback_column
 
     if dataelementinclusion.cardinality is not CARDINALITY.mandatory:
@@ -58,6 +62,6 @@ def column_data_type(dataelementinclusion):
         column_definition += " NULL "
 
     if _format:
-        column_definition += "/* Format should follow: %s */"%_format
+        column_definition += "/* Format should follow: %s */" % _format
 
     return column_definition
