@@ -17,7 +17,7 @@ setup(
     long_description=README,
     url='https://github.com/aristotle-mdr/aristotle-dataset-extensions',
     author='Samuel Spencer',
-    author_email='sam@sqbl.org',
+    author_email='sam@aristotlemetadata.com',
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
@@ -29,7 +29,7 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
     install_requires = [
-        'aristotle-metadata-registry>=1.3.0'
+        'aristotle-metadata-registry>=1.5.0'
     ]
 
 )
