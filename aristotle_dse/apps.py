@@ -1,5 +1,6 @@
 from aristotle_mdr.apps import AristotleExtensionBaseConfig
 
+
 class AristotleDSEConfig(AristotleExtensionBaseConfig):
     name = 'aristotle_dse'
     verbose_name = "Aristotle Dataset Extensions"
