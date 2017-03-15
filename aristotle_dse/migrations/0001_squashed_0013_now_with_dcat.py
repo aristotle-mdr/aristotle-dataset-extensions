@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('aristotle_mdr_identifiers', '0001_initial'),
-        ('aristotle_mdr', '0017_add_organisations'),
+        ('aristotle_mdr', '0001_squashed_0017_add_organisations'),
     ]
 
     operations = [
