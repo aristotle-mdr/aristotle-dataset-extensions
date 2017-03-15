@@ -13,9 +13,7 @@ services:
 
 env:
   - DOCS=1
-  - A11Y='metadata_item'
-  - A11Y='metadata_action'
-  - A11Y='static'
+  - A11Y=1
   - DJANGO_VERSION='1.8'  DB=sqlite  SEARCH=elastic
   - DJANGO_VERSION='1.8'  DB=postgres  SEARCH=elastic
   - DJANGO_VERSION='1.8'  DB=sqlite    SEARCH=whoosh
@@ -27,7 +25,6 @@ env:
   - DJANGO_VERSION='1.10' DB=postgres    SEARCH=whoosh
 
 before_install:
-  - pip install codecov
   - pip install coveralls
 
 install:
@@ -45,7 +42,7 @@ script:
   - if [[ "$DB" != "" ]]; then tox -e dj$DJANGO_VERSION-test-db-$DB-search-$SEARCH --skip-missing-interpreters; fi
 # check documentation builds cleanly
   - if [[ $DOCS == 1 ]]; then tox -e pep8 -e docs --skip-missing-interpreters; fi
-  - if [[ $A11Y != "" ]]; then tox -e ally-$A11Y --skip-missing-interpreters; fi
+  - if [[ $A11Y != "" ]]; then tox -e ally --skip-missing-interpreters; fi
 #  - cat worker1.log
 after_success:
   - coveralls
