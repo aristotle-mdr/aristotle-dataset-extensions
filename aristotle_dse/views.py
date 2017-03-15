@@ -17,14 +17,6 @@ from django.forms.widgets import HiddenInput
 from reversion import revisions as reversion
 
 
-def datasetspecification(*args, **kwargs):
-    return aristotle.views.render_if_user_can_view(aristotle_dse.models.DataSetSpecification, *args, **kwargs)
-
-
-def datasource(*args, **kwargs):
-    return aristotle.views.render_if_user_can_view(aristotle_dse.models.DataSource, *args, **kwargs)
-
-
 @reversion.create_revision()
 def addDataElementsToDSS(request, dss_id):
     dss = get_object_or_404(aristotle_dse.models.DataSetSpecification, id=dss_id)
@@ -39,7 +31,7 @@ def addDataElementsToDSS(request, dss_id):
             for de in form.cleaned_data['dataElements']:
                 dss.addDataElement(
                     data_element=de,
-                    maximumOccurances=maxOccurs,
+                    maximum_occurances=maxOccurs,
                     cardinality=cardinality
                 )
             return HttpResponseRedirect(reverse("aristotle_dse:dataSetSpecification", args=[dss.id]))
@@ -70,7 +62,7 @@ def addClustersToDSS(request, dss_id):
             for dss in form.cleaned_data['clusters']:
                 dss.addCluster(
                     child=dss,
-                    maximumOccurances=maxOccurs,
+                    maximum_occurances=maxOccurs,
                     cardinality=cardinality
                 )
             return HttpResponseRedirect(reverse("aristotle_dse:dataSetSpecification", args=[dss.id]))
