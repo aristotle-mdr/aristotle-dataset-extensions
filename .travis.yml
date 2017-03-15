@@ -56,12 +56,7 @@ addons:
 
 matrix:
   exclude:
-    - python: "2.7"
-      env: A11Y='metadata_item'
-    - python: "2.7"
-      env: A11Y='metadata_action'
-    - python: "2.7"
-      env: A11Y='static'
+      env: A11Y=1
     - python: "2.7"
       env: DOCS=1
     - python: "2.7"

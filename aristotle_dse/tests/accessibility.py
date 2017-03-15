@@ -20,6 +20,12 @@ setup_test_environment()
 from aristotle_mdr.tests.accessibility import MEDIA_TYPES, TestWebPageAccessibilityBase
 
 
+TMP_STATICPATH = tempfile.mkdtemp(suffix='static')
+STATICPATH = TMP_STATICPATH+'/static'
+if not os.path.exists(STATICPATH):
+    os.makedirs(STATICPATH)
+
+
 class DSSTestWebPageAccessibilityBase(TestWebPageAccessibilityBase):
 
     @classmethod
