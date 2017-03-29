@@ -6,8 +6,9 @@
 
 <form method="post" action="{% url 'aristotle_dse:addClustersToDSS' dss_id=item.id %}">{% csrf_token %}
 <div class="modal-body">
-<header>This form allows you to deprecate older items item, by indicating a new version exists.
-        This will state the newest version of the selected items is <em>{{ item.name }}</em>
+<header>
+    This form allows you to attach a number of dataset specification to this Dataset Specification.
+    These attached specifications will show as child dataset clusters of the parent specification named <em>{{ item.name }}</em>.
 </header>
 <section style="height:50%;" id=''>
 {{ form.as_p }}
@@ -25,6 +26,5 @@
         <input type="submit" class="btn btn-primary" value="Add to Dataset Specification" />
     </div>
 </form>
-{% include 'autocomplete_light/static.html' %}
 </div>
 {% endblock %}

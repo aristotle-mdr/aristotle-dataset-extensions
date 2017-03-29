@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('aristotle_dse', '0001_squashed_0013_now_with_dcat'),
+        ('aristotle_dse', '0013_now_with_dcat'),
     ]
 
     operations = [
