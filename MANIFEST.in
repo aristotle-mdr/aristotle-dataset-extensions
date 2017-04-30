@@ -1,0 +1,6 @@
+include LICENSE
+include README.rst
+recursive-include aristotle_mdr_api/static *
+recursive-include aristotle_mdr_api/templates *
+recursive-exclude aristotle_mdr_api/ *.pyc
+exclude MANIFEST.in
