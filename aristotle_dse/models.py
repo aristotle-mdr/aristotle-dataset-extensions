@@ -109,6 +109,9 @@ class Distribution(aristotle.models.concept):
     Examples of distributions include a downloadable CSV file, an API or an RSS feed
     """
     template = "aristotle_dse/concepts/distribution.html"
+    serialize_weak_entities = [
+        ('data_elements', 'distributiondataelementpath_set'),
+    ]
 
     specification = models.ForeignKey(
         'DataSetSpecification',
