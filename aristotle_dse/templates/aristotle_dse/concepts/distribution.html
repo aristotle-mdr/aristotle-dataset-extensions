@@ -1,10 +1,6 @@
 {% extends "aristotle_mdr/concepts/managedContent.html" %}
 {% load i18n aristotle_tags %}
 
-{% block concept_title %}
-{% include "aristotle_dse/concepts/titles/display_title_distribution.html" %}
-{% endblock %}
-
 {% block extra_head_scripts %}
 <style>
     .file_type {
@@ -32,16 +28,18 @@ For more details on how to access this data contact the data custodian listed be
 <h2>Data source details</h2>
 <dl class="">
     <dt>Contained in</dt><dd>
+        {% if item.dataset %}
         <a href="{{item.dataset.get_absolute_url}}">{{item.dataset.name}}</a>
+        {% else %}
+        This distributions is not linked to a dataset
+        {% endif %}
     </dd>
-    <dt>aka:</dt>
-    <dd><ol>
-        {% for id in item.identifiers.all %}
-            <li>{{id.namespace.shorthand_prefix}}::{{id.identifier}}</li>
-        {% endfor %}
-    </ol></dd>
+    {% if item.license %}
     <dt style="float:left">Licence</dt> <dd>{{ item.license | safe }}</dd>
+    {% endif %}
+    {% if item.rights %}
     <dt style="float:left">Rights</dt> <dd>{{ item.rights | safe }}</dd>
+    {% endif %}
 
     <div class="well">
         <span class="file_type">{{item.format_type}}</span>

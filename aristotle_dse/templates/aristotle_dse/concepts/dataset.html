@@ -1,10 +1,6 @@
 {% extends "aristotle_mdr/concepts/managedContent.html" %}
 {% load i18n aristotle_tags %}
 
-{% block concept_title %}
-{% include "aristotle_dse/concepts/titles/display_title_dataset.html" %}
-{% endblock %}
-
 {% block extra_head_scripts %}
 <style>
     .file_type {
@@ -36,12 +32,6 @@ For more details on how to access this data contact the data custodian listed be
 
 <h2>Data source details</h2>
 <dl class="">
-    <dt>aka:</dt>
-    <dd><ol>
-        {% for id in item.identifiers.all %}
-            <li>{{id.namespace.shorthand_prefix}}::{{id.identifier}}</li>
-        {% endfor %}
-    </ol></dd>
     <dt>Frequency</dt>
     <dd>{% if item.accrual_periodicity %}
             {{ item.accrual_periodicity }}
