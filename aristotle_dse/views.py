@@ -34,7 +34,7 @@ def addDataElementsToDSS(request, dss_id):
                     maximum_occurances=maxOccurs,
                     cardinality=cardinality
                 )
-            return HttpResponseRedirect(reverse("aristotle_dse:dataSetSpecification", args=[dss.id]))
+            return HttpResponseRedirect(reverse("aristotle_mdr:item", args=[dss.id]))
     else:
         form = forms.AddDataElementsToDSSForm(user=request.user, qs=qs, dss=dss)
 
@@ -65,7 +65,7 @@ def addClustersToDSS(request, dss_id):
                     maximum_occurances=maxOccurs,
                     cardinality=cardinality
                 )
-            return HttpResponseRedirect(reverse("aristotle_dse:dataSetSpecification", args=[dss.id]))
+            return HttpResponseRedirect(reverse("aristotle_mdr:item", args=[dss.id]))
     else:
         form = forms.AddClustersToDSSForm(user=request.user, qs=qs, dss=dss)
 
@@ -113,7 +113,7 @@ def editDataElementInclusion(request, dss_id, de_id):
         form = forms.EditDataElementInclusionForm(request.POST, instance=inclusion)  # , user=request.user)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("aristotle_dse:dataSetSpecification", args=[dss.id]))
+            return HttpResponseRedirect(reverse("aristotle_mdr:item", args=[dss.id]))
     else:
         form = forms.EditDataElementInclusionForm(instance=inclusion)  # , user=request.user)
 
@@ -139,7 +139,7 @@ def editClusterInclusion(request, dss_id, cluster_id):
         form = forms.EditClusterInclusionForm(request.POST, instance=inclusion)  # , user=request.user)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("aristotle_dse:dataSetSpecification", args=[dss.id]))
+            return HttpResponseRedirect(reverse("aristotle_mdr:item", args=[dss.id]))
     else:
         form = forms.EditClusterInclusionForm(instance=inclusion)  # , user=request.user)
 
@@ -180,7 +180,7 @@ def editInclusionDetails(request, dss_id, inc_type, cluster_id):
         form = forms.EditClusterInclusionForm(request.POST, instance=inclusion)  # , user=request.user)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("aristotle_dse:dataSetSpecification", args=[dss.id]))
+            return HttpResponseRedirect(reverse("aristotle_mdr:item", args=[dss.id]))
     else:
         form = forms.EditClusterInclusionForm(instance=inclusion)  # , user=request.user)
 
