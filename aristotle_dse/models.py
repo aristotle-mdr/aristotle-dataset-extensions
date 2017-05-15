@@ -284,7 +284,7 @@ class DataSetSpecification(aristotle.models.concept):
                 aristotle.models.Property.objects.filter(dataelementconcept__dataelement__datasetspecification=self)
             ),
             (
-                aristotle.models.ValueDomain, 
+                aristotle.models.ValueDomain,
                 aristotle.models.ValueDomain.objects.filter(dataelement__datasetspecification=self)
             ),
         ]

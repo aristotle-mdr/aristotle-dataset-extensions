@@ -85,6 +85,7 @@ def addClustersToDSS(request, dss_id):
         }
     )
 
+
 class RemoveDEFromDSS(ConfirmDeleteView):
     item_kwarg="dss_id"
     form_title="Remove data element from dataset"
@@ -98,9 +99,10 @@ class RemoveDEFromDSS(ConfirmDeleteView):
         dss = get_object_or_404(aristotle_dse.models.DataSetSpecification, id=dss_id)
         if user_can_view(self.request.user, de) and user_can_edit(self.request.user, dss):
             dss.dssdeinclusion_set.filter(data_element=de).delete()
-            messages.success(self.request, 
+            messages.success(
+                self.request,
                 _('The Data Element "%(de_name)s" was removed from the dataset "%(dss_name)s".') % {
-                    "de_name"   : de.name, "dss_name": dss.name
+                    "de_name": de.name, "dss_name": dss.name
                 }
             )
         else:
@@ -114,8 +116,9 @@ class RemoveDEFromDSS(ConfirmDeleteView):
             'This data element will still exist in the registry, but will no longer be linked to this Data Set Specification. \n\n'
             'Click "Remove data element" below to confirm, or click "Cancel" to return'
         ) % {
-            "de_name"   : de.name, "dss_name": dss.name
+            "de_name": de.name, "dss_name": dss.name
         }
+
 
 class RemoveClusterFromDSS(ConfirmDeleteView):
     item_kwarg="dss_id"
@@ -129,9 +132,10 @@ class RemoveClusterFromDSS(ConfirmDeleteView):
         dss = get_object_or_404(aristotle_dse.models.DataSetSpecification, id=dss_id)
         if user_can_view(self.request.user, cluster) and user_can_edit(self.request.user, dss):
             dss.dssclusterinclusion_set.filter(child=cluster).delete()
-            messages.success(self.request, 
+            messages.success(
+                self.request,
                 _('The cluster "%(cl_name)s" was removed from the dataset "%(dss_name)s".') % {
-                    "cl_name"   : cluster.name, "dss_name": dss.name
+                    "cl_name": cluster.name, "dss_name": dss.name
                 }
             )
         else:
