@@ -1,20 +1,27 @@
-from aristotle_mdr.perms import user_can_view, user_can_edit, user_in_workgroup, user_is_workgroup_manager, user_can_change_status
-
-from django.shortcuts import render, redirect, get_object_or_404
-import aristotle_mdr as aristotle
-from aristotle_mdr.utils import construct_change_message
-import aristotle_dse
-from aristotle_dse import forms
-
+from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.http import HttpResponseRedirect, Http404
 from django.forms.models import modelformset_factory
-from django.views.generic import TemplateView
 from django.forms.widgets import HiddenInput
+from django.http import HttpResponseRedirect, Http404
+from django.views.generic import TemplateView
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils.translation import ugettext as _
 
 from reversion import revisions as reversion
+
+import aristotle_mdr as aristotle
+from aristotle_mdr.contrib.generic.views import ConfirmDeleteView
+from aristotle_mdr.contrib.generic.forms import HiddenOrderModelFormSet
+from aristotle_mdr.perms import (
+    user_can_view, user_can_edit, user_in_workgroup,
+    user_is_workgroup_manager, user_can_change_status
+)
+from aristotle_mdr.utils import construct_change_message
+
+import aristotle_dse
+from aristotle_dse import forms
 
 
 @reversion.create_revision()
@@ -78,27 +85,57 @@ def addClustersToDSS(request, dss_id):
         }
     )
 
+class RemoveDEFromDSS(ConfirmDeleteView):
+    item_kwarg="dss_id"
+    form_title="Remove data element from dataset"
+    form_delete_button_text="Remove data element"
 
-@reversion.create_revision()
-def removeClusterFromDSS(request, cluster_id, dss_id):
-    cluster = get_object_or_404(aristotle_dse.models.DataSetSpecification, id=cluster_id)
-    dss = get_object_or_404(aristotle_dse.models.DataSetSpecification, id=dss_id)
-    if user_can_view(request.user, cluster) and user_can_edit(request.user, dss):
-        dss.dssclusterinclusion_set.filter(child=cluster).delete()
-    else:
-        raise PermissionDenied
-    return HttpResponseRedirect(dss.get_absolute_url())
+    @reversion.create_revision()
+    def perform_deletion(self):
+        de_id = self.kwargs['de_id']
+        dss_id = self.kwargs['dss_id']
+        de = get_object_or_404(aristotle.models.DataElement, id=de_id)
+        dss = get_object_or_404(aristotle_dse.models.DataSetSpecification, id=dss_id)
+        if user_can_view(self.request.user, de) and user_can_edit(self.request.user, dss):
+            dss.dssdeinclusion_set.filter(data_element=de).delete()
+            messages.success(self.request, 
+                _('The Data Element "%(de_name)s" was removed from the dataset "%(dss_name)s".') % {
+                    "de_name"   : de.name, "dss_name": dss.name
+                }
+            )
+        else:
+            raise PermissionDenied
 
+    def warning_text(self):
+        de = get_object_or_404(aristotle.models.DataElement, id=self.kwargs['de_id'])
+        dss = get_object_or_404(aristotle_dse.models.DataSetSpecification, id=self.kwargs['dss_id'])
+        return _(
+            'You are about to detatch the data element "%(de_name)s" from the dataset "%(dss_name)s". \n'
+            'This data element will still exist in the registry, but will no longer be linked to this Data Set Specification. \n\n'
+            'Click "Remove data element" below to confirm, or click "Cancel" to return'
+        ) % {
+            "de_name"   : de.name, "dss_name": dss.name
+        }
 
-@reversion.create_revision()
-def removeDataElementFromDSS(request, de_id, dss_id):
-    de = get_object_or_404(aristotle.models.DataElement, id=de_id)
-    dss = get_object_or_404(aristotle_dse.models.DataSetSpecification, id=dss_id)
-    if user_can_view(request.user, de) and user_can_edit(request.user, dss):
-        dss.dssdeinclusion_set.filter(data_element=de).delete()
-    else:
-        raise PermissionDenied
-    return HttpResponseRedirect(dss.get_absolute_url())
+class RemoveClusterFromDSS(ConfirmDeleteView):
+    item_kwarg="dss_id"
+    form_title="Remove data element from this dataset"
+
+    @reversion.create_revision()
+    def perform_deletion(self):
+        cluster_id = self.kwargs['cluster_id']
+        dss_id = self.kwargs['dss_id']
+        cluster = get_object_or_404(aristotle_dse.models.DataSetSpecification, id=cluster_id)
+        dss = get_object_or_404(aristotle_dse.models.DataSetSpecification, id=dss_id)
+        if user_can_view(self.request.user, cluster) and user_can_edit(self.request.user, dss):
+            dss.dssclusterinclusion_set.filter(child=cluster).delete()
+            messages.success(self.request, 
+                _('The cluster "%(cl_name)s" was removed from the dataset "%(dss_name)s".') % {
+                    "cl_name"   : cluster.name, "dss_name": dss.name
+                }
+            )
+        else:
+            raise PermissionDenied
 
 
 @reversion.create_revision()
@@ -218,9 +255,9 @@ def editInclusionOrder(request, dss_id, inc_type):
 
     ValuesFormSet = modelformset_factory(
         item_type,
-        can_delete=True,  # dont need can_order is we have an order field
-        fields=('id', 'order', 'maximum_occurances'),
-        widgets={'order': HiddenInput},
+        formset=HiddenOrderModelFormSet,
+        can_order=True,
+        fields=('id',),
         extra=extra
     )
 
@@ -235,7 +272,7 @@ def editInclusionOrder(request, dss_id, inc_type):
                         inc = item_type.objects.get(pk=form['id'].value())
                         if inc.dss != item:
                             raise PermissionDenied
-                        inc.order = form['order'].value()
+                        inc.order = form['ORDER'].value()
                         inc.maximum_occurances = form['maximum_occurances'].value()
                         # value = form.save(commit=False) #Don't immediately save, we need to attach the value domain
                         # value.dss = item
@@ -249,7 +286,6 @@ def editInclusionOrder(request, dss_id, inc_type):
     else:
         formset = ValuesFormSet(
             queryset=item_type.objects.filter(dss=item.id),
-            initial=[{'order': num_values, 'value': '', 'meaning': ''}]
         )
     return render(
         request,

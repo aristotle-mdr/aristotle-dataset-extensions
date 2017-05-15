@@ -3,6 +3,12 @@
 {% block title %}Add Data set cluster to <strong>{{ item.name }}</strong>{% endblock %}
 
 {% block content %}
+    {% block extra_head_scripts %}
+        {% if request.is_ajax %}
+            {{ form.media }}
+            {{ formset.media }}
+        {% endif %}
+    {% endblock %}
 
 <form method="post" action="{% url 'aristotle_dse:addClustersToDSS' dss_id=item.id %}">{% csrf_token %}
 <div class="modal-body">
