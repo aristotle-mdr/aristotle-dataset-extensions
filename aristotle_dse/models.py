@@ -272,13 +272,21 @@ class DataSetSpecification(aristotle.models.concept):
         return list(self.clusters.all()) + list(self.data_elements.all())
 
     def get_download_items(self):
-        des = self.data_elements.all()
         return [
-            (DataSetSpecification, self.clusters.all().order_by('name')),
-            (aristotle.models.DataElement, des.order_by('name')),
-            (aristotle.models.ObjectClass, aristotle.models.ObjectClass.objects.filter(dataelementconcept__dataelement__datasetspecification=self).order_by('name')),
-            (aristotle.models.Property, aristotle.models.Property.objects.filter(dataelementconcept__dataelement__datasetspecification=self).order_by('name')),
-            (aristotle.models.ValueDomain, aristotle.models.ValueDomain.objects.filter(dataelement__datasetspecification=self).order_by('name')),
+            (DataSetSpecification, self.clusters.all()),
+            (aristotle.models.DataElement, self.data_elements.all()),
+            (
+                aristotle.models.ObjectClass,
+                aristotle.models.ObjectClass.objects.filter(dataelementconcept__dataelement__datasetspecification=self)
+            ),
+            (
+                aristotle.models.Property,
+                aristotle.models.Property.objects.filter(dataelementconcept__dataelement__datasetspecification=self)
+            ),
+            (
+                aristotle.models.ValueDomain,
+                aristotle.models.ValueDomain.objects.filter(dataelement__datasetspecification=self)
+            ),
         ]
 
 
