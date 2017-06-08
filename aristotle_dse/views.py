@@ -301,3 +301,5 @@ def editInclusionOrder(request, dss_id, inc_type):
 class DynamicTemplateView(TemplateView):
     def get_template_names(self):
         return ['aristotle_dse/static/%s.html' % self.kwargs['template']]
+
+
