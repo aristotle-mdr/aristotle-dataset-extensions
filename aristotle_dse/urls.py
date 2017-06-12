@@ -25,4 +25,17 @@ urlpatterns = [
     # These are required for about pages to work. Include them, or custom items will die!
     url(r'^about/(?P<template>.+)/?$', views.DynamicTemplateView.as_view(), name="about"),
     url(r'^about/?$', TemplateView.as_view(template_name='aristotle_dse/static/about_aristotle_dse.html'), name="about"),
+
+    # url(r'^add/column_to_distribution/(?P<dist_id>\d+)', views.add_column_to_distribution, name='add_column_to_distribution'),
+    url(r'^add/column_to_distribution/(?P<iid>\d+)?/?$',
+        GenericAlterOneToManyView.as_view(
+            model_base=models.Distribution,
+            model_to_add=models.DistributionDataElementPath,
+            model_base_field='distributiondataelementpath_set',
+            model_to_add_field='distribution',
+            ordering_field='order',
+            form_add_another_text=_('Add a column'),
+            form_title=_('Change Columns')
+        ), name='add_column_to_distribution'),
+
 ]
