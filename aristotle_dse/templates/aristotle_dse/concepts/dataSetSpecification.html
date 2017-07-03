@@ -19,18 +19,11 @@
         })
     </script>
 
-    {% if item.dssdeinclusion_set.exists or item.dssclusterinclusion_set.exists %}
         <table class="dssInclusions table table-striped table-condensed">
             <thead>
                 <tr>
                     <th>
-                        {% if item.dssdeinclusion_set.exists and item.dssclusterinclusion_set.exists %}
                             Components
-                        {% elif item.dssdeinclusion_set.exists %}
-                            Data Elements
-                        {% else %}
-                            Clusters
-                        {% endif %}
                     </th>
                     <th>Statuses
                     </th>
@@ -53,9 +46,8 @@
                     {% endif %}
                 </tr>
             </thead>
-            {% if item.dssclusterinclusion_set.exists %}
+            {% if item.dssclusterinclusion_set.exists or item|can_edit:request.user %}
             <tbody>
-                {% if item.dssdeinclusion_set.exists and item.dssclusterinclusion_set.exists %}
                 <tr>
                     <th colspan=5>Clusters
                     {% if item|can_edit:request.user %}
@@ -76,7 +68,6 @@
                     {% endif %}
                     </th>
                 </tr>
-                {% endif %}
             {% for deinc in item.dssclusterinclusion_set.all %}
                 <tr>
                     <td><i class="fa fa-fw fa-folder-o"></i>{% include "aristotle_mdr/helpers/itemLink.html" with item=deinc.child %}
@@ -110,6 +101,7 @@
                             <i class="fa fa-fw fa-pencil"></i>
                         </a>
                         <a href="{% url 'aristotle_dse:removeClusterFromDSS' deinc.child.id item.id %}"
+                        data-toggle="modal" data-target="#deleteConfirm"
                         class="close" title="Remove from Dataset specification">
                             <i class="fa fa-fw fa-times"></i>
                         </a>
@@ -119,13 +111,12 @@
             {% endfor %}
             </tbody>
             {% endif %}
-            {% if item.dssdeinclusion_set.exists %}
+            {% if item.dssdeinclusion_set.exists or item|can_edit:request.user %}
             <tbody>
-                {% if item.dssdeinclusion_set.exists and item.dssclusterinclusion_set.exists %}
                 <tr>
                     <th colspan=5>Data Elements
                     {% if item|can_edit:request.user %}
-                        <div class="btn-group pull-right" role="group" aria-label="Dala element actions">
+                        <div class="btn-group pull-right" role="group" aria-label="Data element actions">
                         <a href="{% url 'aristotle_dse:addDataElementsToDSS' dss_id=item.id %}"
                             data-toggle="modal" data-target="#addDEtoDSS"
                             class="btn btn-default btn-sm">
@@ -139,7 +130,6 @@
                             Reorder
                         </a>
                         </div>
-                    {% endif %}
                     </th>
                 </tr>
             {% endif %}
@@ -176,6 +166,7 @@
                             <i class="fa fa-fw fa-pencil"></i>
                         </a>
                         <a href="{% url 'aristotle_dse:removeDataElementFromDSS' deinc.data_element.id item.id %}"
+                        data-toggle="modal" data-target="#deleteConfirm"
                         class="close" title="Remove from Dataset specification">
                             <i class="fa fa-fw fa-times"></i>
                         </a>
@@ -199,30 +190,12 @@
                 </tr>
             </tfoot>
         </table>
-    {% else %}
-        <div class="well well-lg">No data elements have been assigned to this data set specification.</div>
-        {% if item|can_edit:request.user %}
-        <div class="btn-group pull-right" role="group" aria-label="Dataset actions">
-            <a href="{% url 'aristotle_dse:addDataElementsToDSS' dss_id=item.id %}"
-                data-toggle="modal" data-target="#addDEtoDSS"
-                class="btn btn-primary">
-                <i class="fa fa-plus"></i>
-                Add a data element to this data set specification
-            </a>
-            <a href="{% url 'aristotle_dse:addClustersToDSS' dss_id=item.id %}"
-                data-toggle="modal" data-target="#addClusterstoDSS"
-                class="btn btn-primary">
-                <i class="fa fa-plus"></i>
-                Add a cluster to this data set specification
-            </a>
-        </div>
-        {% endif %}
-    {% endif %}
 
     {% if item|can_edit:request.user %}
         {% bootstrap_modal 'addDEtoDSS' %}
         {% bootstrap_modal 'addClusterstoDSS' %}
         {% bootstrap_modal 'reorderPane' size='lg' %}
+        {% bootstrap_modal 'deleteConfirm' %}
     {% endif %}
 
 {% endblock %}

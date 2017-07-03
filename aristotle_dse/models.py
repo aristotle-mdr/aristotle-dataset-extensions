@@ -6,6 +6,7 @@ from model_utils import Choices
 
 import aristotle_mdr as aristotle
 from aristotle_mdr.models import RichTextField
+from aristotle_mdr.fields import ConceptForeignKey, ConceptManyToManyField
 
 
 class DataCatalog(aristotle.models.concept):
@@ -113,7 +114,7 @@ class Distribution(aristotle.models.concept):
         ('data_elements', 'distributiondataelementpath_set'),
     ]
 
-    specification = models.ForeignKey(
+    specification = ConceptForeignKey(
         'DataSetSpecification',
         help_text=_('The dataset specification to which this data source conforms'),
         blank=True,
@@ -182,7 +183,7 @@ class DistributionDataElementPath(aristotle.models.aristotleComponent):
         blank=True, null=True,
         help_text=_('A relation to the DCAT Distribution Record.'),
         )
-    data_element = models.ForeignKey(
+    data_element = ConceptForeignKey(
         aristotle.models.DataElement,
         blank=True, null=True,
         help_text=_('An entity responsible for making the dataset available.'),
@@ -196,6 +197,10 @@ class DistributionDataElementPath(aristotle.models.aristotleComponent):
         null=True, blank=True,
         help_text=_("Column position within a dataset.")
         )
+    specialisation_classes = ConceptManyToManyField(
+        aristotle.models.ObjectClass,
+        help_text=_("")
+    )
 
 
 CARDINALITY = Choices(('optional', _('Optional')), ('conditional', _('Conditional')), ('mandatory', _('Mandatory')))
@@ -218,20 +223,20 @@ class DataSetSpecification(aristotle.models.concept):
         default=False,
         help_text=_("Indicates if the ordering for a dataset is must match exactly the order laid out in the specification.")
         )
-    statistical_unit = models.ForeignKey(
+    statistical_unit = ConceptForeignKey(
         aristotle.models._concept,
         related_name='statistical_unit_of',
         blank=True,
         null=True,
         help_text=_("Indiciates if the ordering for a dataset is must match exactly the order laid out in the specification.")
         )
-    data_elements = models.ManyToManyField(
+    data_elements = ConceptManyToManyField(
         aristotle.models.DataElement,
         blank=True,
         null=True,
         through='DSSDEInclusion'
         )
-    clusters = models.ManyToManyField(
+    clusters = ConceptManyToManyField(
         'self',
         through='DSSClusterInclusion',
         blank=True,
@@ -272,13 +277,21 @@ class DataSetSpecification(aristotle.models.concept):
         return list(self.clusters.all()) + list(self.data_elements.all())
 
     def get_download_items(self):
-        des = self.data_elements.all()
         return [
-            (DataSetSpecification, self.clusters.all().order_by('name')),
-            (aristotle.models.DataElement, des.order_by('name')),
-            (aristotle.models.ObjectClass, aristotle.models.ObjectClass.objects.filter(dataelementconcept__dataelement__datasetspecification=self).order_by('name')),
-            (aristotle.models.Property, aristotle.models.Property.objects.filter(dataelementconcept__dataelement__datasetspecification=self).order_by('name')),
-            (aristotle.models.ValueDomain, aristotle.models.ValueDomain.objects.filter(dataelement__datasetspecification=self).order_by('name')),
+            (DataSetSpecification, self.clusters.all()),
+            (aristotle.models.DataElement, self.data_elements.all()),
+            (
+                aristotle.models.ObjectClass,
+                aristotle.models.ObjectClass.objects.filter(dataelementconcept__dataelement__datasetspecification=self)
+            ),
+            (
+                aristotle.models.Property,
+                aristotle.models.Property.objects.filter(dataelementconcept__dataelement__datasetspecification=self)
+            ),
+            (
+                aristotle.models.ValueDomain,
+                aristotle.models.ValueDomain.objects.filter(dataelement__datasetspecification=self)
+            ),
         ]
 
 
@@ -291,7 +304,7 @@ class DSSInclusion(aristotle.models.aristotleComponent):
     def parentItem(self):
         return self.dss
 
-    dss = models.ForeignKey(DataSetSpecification)
+    dss = ConceptForeignKey(DataSetSpecification)
     maximum_occurances = models.PositiveIntegerField(
         default=1,
         help_text=_("The maximum number of times a item can be included in a dataset")
@@ -320,7 +333,11 @@ class DSSInclusion(aristotle.models.aristotleComponent):
 
 # Holds the link between a DSS and a Data Element with the DSS Specific details.
 class DSSDEInclusion(DSSInclusion):
-    data_element = models.ForeignKey(aristotle.models.DataElement, related_name="dssInclusions")
+    data_element = ConceptForeignKey(aristotle.models.DataElement, related_name="dssInclusions")
+    specialisation_classes = ConceptManyToManyField(
+        aristotle.models.ObjectClass,
+        help_text=_("")
+    )
 
     class Meta(DSSInclusion.Meta):
         verbose_name = "DSS Data Element Inclusion"
@@ -335,7 +352,7 @@ class DSSClusterInclusion(DSSInclusion):
     """
     The child in this relationship is considered to be a child of the parent DSS as specified by the `dss` property.
     """
-    child = models.ForeignKey(DataSetSpecification, related_name='parent_dss')
+    child = ConceptForeignKey(DataSetSpecification, related_name='parent_dss')
 
     class Meta(DSSInclusion.Meta):
         verbose_name = "DSS Cluster Inclusion"

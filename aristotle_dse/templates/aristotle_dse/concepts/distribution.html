@@ -50,9 +50,16 @@ For more details on how to access this data contact the data custodian listed be
             Download
         </a>
         {% endif %}
-        {% if item.distributiondataelementpath_set.exists %}
+        {% if item.distributiondataelementpath_set.exists or item|can_edit:request.user %}
         <p>
-        <strong>Data Elements in this dataset</strong>
+        <strong>Data Elements in this distribution</strong>
+                        <a href="{% url 'aristotle_dse:add_column_to_distribution' iid=item.id %}"
+                            data-toggle="modal" data-target="#edit_distribution"
+                            class="btn btn-default btn-sm pull-right">
+                            <i class="fa fa-plus"></i>
+                            Edit columns
+                        </a>
+
         <table class='table table-striped'>
             <thead>
                 <tr>
@@ -70,6 +77,17 @@ For more details on how to access this data contact the data custodian listed be
                     </td>
                     <td>
                         <a href="{{column.data_element.get_absolute_url}}">{{column.data_element.name}}</a>
+                        {% if column.specialisation_classes.exists %}
+                        <hr>
+                        <div>
+                        This data element is specialised in this context for the following object classes:
+                        <ul>
+                            {% for oc in column.specialisation_classes.all|can_view_iter:request.user %}
+                             <li><a href="{{oc.get_absolute_url}}">{{oc.name}}</a></li>
+                            {% endfor %}
+                        </ul>
+                        </div>
+                        {% endif %}
                     </td>
                     <td>
                         {{column.data_element.definition|striptags}}
@@ -86,5 +104,9 @@ For more details on how to access this data contact the data custodian listed be
     </div>
 
 </dl>
+
+    {% if item|can_edit:request.user %}
+        {% bootstrap_modal 'edit_distribution' size='lg' %}
+    {% endif %}
 
 {% endblock %}
