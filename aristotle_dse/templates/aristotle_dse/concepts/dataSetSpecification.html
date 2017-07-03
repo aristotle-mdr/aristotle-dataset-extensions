@@ -7,6 +7,7 @@
 {% endblock %}
 
 {% block objSpecific %}
+
 <h2>Metadata items in this Data Set Specification</h2>
     <p> Below is a list of all the components within this Dataset Specification.
         <br> Each entry includes the item name, whether the item is <em>optional, mandatory or conditional</em> and the maximum times the item can occur in a dataset.
@@ -81,12 +82,13 @@
                     <td><i class="fa fa-fw fa-folder-o"></i>{% include "aristotle_mdr/helpers/itemLink.html" with item=deinc.child %}
                         {% if deinc.specific_information %}
                         <div>
+                            <strong>Specific Information:</strong>
                             {{ deinc.specific_information | safe }}
                         </div>
                         {% endif %}
                         {% if deinc.conditional_obligation %}
                         <div>
-                            <strong>Conditional Obligation:</strong>{{ deinc.conditionalObligation }}
+                            <strong>Conditional Obligation:</strong>{{ deinc.conditional_obligation|safe }}
                         </div>
                         {% endif %}
                     </td>
@@ -146,12 +148,13 @@
                     <td>{{ deinc.order }}<i class="fa fa-fw fa-"></i>{% include "aristotle_mdr/helpers/itemLink.html" with item=deinc.data_element %}
                         {% if deinc.specific_information %}
                         <div>
+                            <strong>Specific Information:</strong>
                             {{ deinc.specific_information | safe }}
                         </div>
                         {% endif %}
                         {% if deinc.conditional_obligation %}
                         <div>
-                            <strong>Conditional Obligation:</strong>{{ deinc.conditional_obligation }}
+                            <strong>Conditional Obligation:</strong>{{ deinc.conditional_obligation | safe }}
                         </div>
                         {% endif %}
                     </td>
