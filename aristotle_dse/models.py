@@ -113,13 +113,6 @@ class Distribution(aristotle.models.concept):
     serialize_weak_entities = [
         ('data_elements', 'distributiondataelementpath_set'),
     ]
-
-    specification = ConceptForeignKey(
-        'DataSetSpecification',
-        help_text=_('The dataset specification to which this data source conforms'),
-        blank=True,
-        null=True,
-        )
     issued = models.DateField(
         blank=True, null=True,
         help_text=_('Date of formal issuance (e.g., publication) of the catalog.'),
@@ -199,7 +192,8 @@ class DistributionDataElementPath(aristotle.models.aristotleComponent):
         )
     specialisation_classes = ConceptManyToManyField(
         aristotle.models.ObjectClass,
-        help_text=_("")
+        help_text=_(""),
+        blank=True
     )
 
 
@@ -233,7 +227,6 @@ class DataSetSpecification(aristotle.models.concept):
     data_elements = ConceptManyToManyField(
         aristotle.models.DataElement,
         blank=True,
-        null=True,
         through='DSSDEInclusion'
         )
     clusters = ConceptManyToManyField(
