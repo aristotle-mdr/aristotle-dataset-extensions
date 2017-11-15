@@ -13,15 +13,44 @@
 
 {% block objSpecific %}
 
-The following organizations have data with {{item.name}}:
-<ul>
-{% for d in item.publishing_organisations.all|order_by:"name" %}
-<li>
-    <a href="{{d.pk}}">
-        {{d}} - {{d.dataset_set.count}} datasets
-    </a>
-</li>
+
+The following data sets are included in this catalog:
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Details</th>
+            <th title="Number of distributions">#</th>
+            <th>
+<a href="{% url 'aristotle_dse:add_dataset_to_catalog' iid=item.id %}"
+    data-toggle="modal" data-target="#dse_modal"
+    class="btn btn-default btn-sm pull-right">
+    <i class="fa fa-plus"></i>
+    Edit datasets
+</a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+{% for d in item.dataset_set.all|order_by:"name"|can_view_iter:request.user %}
+<tr>
+    <td>
+    {% include "aristotle_mdr/helpers/itemLink.html" with item=d %}
+    </td>
+    <td>
+    {% include "aristotle_mdr/helpers/inlineDetails.html" with item=d name=False %}
+    </td>
+    <td>{{d.distribution_set.count}}</td>
+    <td></td>
+</td>
 
 {% endfor %}
-</ul>
+</tbody>
+</table>
+
+    {% if item|can_edit:request.user %}
+        {% bootstrap_modal 'dse_modal' size='lg' %}
+    {% endif %}
+
 {% endblock %}
