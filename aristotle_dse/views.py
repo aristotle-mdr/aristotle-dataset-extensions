@@ -66,9 +66,9 @@ def addClustersToDSS(request, dss_id):
         if form.is_valid():
             cardinality = form.cleaned_data['cardinality']
             maxOccurs = form.cleaned_data['maximum_occurances']
-            for dss in form.cleaned_data['clusters']:
+            for child_dss in form.cleaned_data['clusters']:
                 dss.addCluster(
-                    child=dss,
+                    child=child_dss,
                     maximum_occurances=maxOccurs,
                     cardinality=cardinality
                 )
@@ -277,7 +277,7 @@ def editInclusionOrder(request, dss_id, inc_type):
                         if inc.dss != item:
                             raise PermissionDenied
                         inc.order = form['ORDER'].value()
-                        inc.maximum_occurances = form['maximum_occurances'].value()
+                        # inc.maximum_occurances = form['maximum_occurances'].value()
                         # value = form.save(commit=False) #Don't immediately save, we need to attach the value domain
                         # value.dss = item
                         inc.save()
